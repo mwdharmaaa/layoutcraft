@@ -1,122 +1,126 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React from 'react';
+import { StudioHeader } from '@/features/toolbar/components/StudioHeader';
+import { StudioSidebar } from '@/features/palette/components/StudioSidebar';
+import { CanvasArtboard } from '@/features/canvas/components/CanvasArtboard';
+import { PropertyInspector } from '@/features/inspector/components/PropertyInspector';
+import { ExportModal } from '@/features/export/components/ExportModal';
+import { useStudioState } from '@/features/canvas/hooks/useStudioState';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const {
+    rootNode,
+    selectedId,
+    selectedNode,
+    hoveredId,
+    viewport,
+    zoom,
+    showGrid,
+    isPreview,
+    sidebarTab,
+    inspectorTab,
+    isExportOpen,
+    canUndo,
+    canRedo,
+    setHoveredId,
+    setViewport,
+    setZoom,
+    setShowGrid,
+    setIsPreview,
+    setSidebarTab,
+    setInspectorTab,
+    setIsExportOpen,
+    handleUndo,
+    handleRedo,
+    handleSelectNode,
+    handleInsertNode,
+    handleUpdateStyles,
+    handleUpdateContent,
+    handleUpdateName,
+    handleDeleteNode,
+    handleDuplicateNode,
+    handleMoveOrder,
+    handleToggleVisibility,
+    handleSelectTemplate,
+    handleImportLayout,
+    handleClearCanvas,
+  } = useStudioState();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
+      {/* Studio Top Navigation Bar */}
+      <StudioHeader
+        viewport={viewport}
+        onViewportChange={setViewport}
+        zoom={zoom}
+        onZoomChange={setZoom}
+        showGrid={showGrid}
+        onToggleGrid={setShowGrid}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        isPreview={isPreview}
+        onTogglePreview={setIsPreview}
+        onOpenExport={() => setIsExportOpen(true)}
+        onClearCanvas={handleClearCanvas}
+      />
 
-      <div className="ticks"></div>
+      {/* Main Workspace Workspace Dock */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Left Dock: Blocks, Layers, Templates */}
+        {!isPreview && (
+          <StudioSidebar
+            activeTab={sidebarTab}
+            onTabChange={setSidebarTab}
+            onInsertNode={handleInsertNode}
+            rootNode={rootNode}
+            selectedId={selectedId}
+            onSelectNode={handleSelectNode}
+            onToggleVisibility={handleToggleVisibility}
+            onDeleteNode={handleDeleteNode}
+            onSelectTemplate={handleSelectTemplate}
+          />
+        )}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Center Canvas Viewport */}
+        <CanvasArtboard
+          rootNode={rootNode}
+          selectedId={selectedId}
+          hoveredId={hoveredId}
+          viewport={viewport}
+          zoom={zoom}
+          showGrid={showGrid}
+          isPreview={isPreview}
+          onSelect={(id) => handleSelectNode(id)}
+          onHover={(id) => setHoveredId(id)}
+          onUpdateContent={handleUpdateContent}
+          onDuplicate={handleDuplicateNode}
+          onDelete={handleDeleteNode}
+          onMoveUp={(id) => handleMoveOrder(id, 'up')}
+          onMoveDown={(id) => handleMoveOrder(id, 'down')}
+          onCanvasClick={() => handleSelectNode(rootNode.id)}
+        />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Right Dock: Property Inspector */}
+        {!isPreview && (
+          <PropertyInspector
+            selectedNode={selectedNode}
+            activeTab={inspectorTab}
+            onTabChange={setInspectorTab}
+            onUpdateStyles={handleUpdateStyles}
+            onUpdateContent={(txt) => selectedId && handleUpdateContent(selectedId, txt)}
+            onUpdateName={handleUpdateName}
+          />
+        )}
+      </div>
+
+      {/* Code Export & Project Share Modal */}
+      <ExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        rootNode={rootNode}
+        onImportLayout={handleImportLayout}
+      />
+    </div>
+  );
 }
-
-export default App
