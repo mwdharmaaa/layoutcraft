@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, type FC } from 'react';
 import { Eye, EyeOff, Trash2, ChevronRight, ChevronDown, Layers } from 'lucide-react';
 import type { LayoutNode } from '@/core/types/element.types';
 
@@ -11,7 +11,7 @@ interface LayersTreeProps {
   onDelete: (id: string) => void;
 }
 
-export const LayersTreeItem: React.FC<LayersTreeProps> = ({
+export const LayersTreeItem: FC<LayersTreeProps> = ({
   node,
   selectedId,
   depth = 0,
@@ -19,7 +19,7 @@ export const LayersTreeItem: React.FC<LayersTreeProps> = ({
   onToggleVisibility,
   onDelete,
 }) => {
-  const [isExpanded, setIsExpanded] = React.useState(true);
+  const [isExpanded, setIsExpanded] = useState(true);
   const isSelected = selectedId === node.id;
   const hasChildren = node.children && node.children.length > 0;
 
@@ -99,7 +99,7 @@ export const LayersTreeItem: React.FC<LayersTreeProps> = ({
   );
 };
 
-export const LayersTree: React.FC<LayersTreeProps> = (props) => {
+export const LayersTree: FC<LayersTreeProps> = (props) => {
   return (
     <div className="flex flex-col h-full overflow-hidden select-none">
       <div className="p-3 border-b border-zinc-800 flex items-center gap-2">

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC, MouseEvent, FocusEvent, JSX } from 'react';
 import type { LayoutNode } from '@/core/types/element.types';
 import { stylesToCssProperties } from '@/core/utils/style_converter';
 import { ElementBoundingBox } from './ElementBoundingBox';
@@ -8,8 +8,8 @@ interface CanvasRendererProps {
   selectedId: string | null;
   hoveredId: string | null;
   isPreview: boolean;
-  onSelect: (id: string, e: React.MouseEvent) => void;
-  onHover: (id: string | null, e: React.MouseEvent) => void;
+  onSelect: (id: string, e: MouseEvent) => void;
+  onHover: (id: string | null, e: MouseEvent) => void;
   onUpdateContent: (id: string, text: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -17,7 +17,7 @@ interface CanvasRendererProps {
   onMoveDown?: (id: string) => void;
 }
 
-export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
+export const CanvasRenderer: FC<CanvasRendererProps> = ({
   node,
   selectedId,
   hoveredId,
@@ -36,25 +36,25 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
   const isHovered = !isPreview && hoveredId === node.id && !isSelected;
   const cssStyle = stylesToCssProperties(node.styles);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: MouseEvent) => {
     if (isPreview) return;
     e.stopPropagation();
     onSelect(node.id, e);
   };
 
-  const handleMouseEnter = (e: React.MouseEvent) => {
+  const handleMouseEnter = (e: MouseEvent) => {
     if (isPreview) return;
     e.stopPropagation();
     onHover(node.id, e);
   };
 
-  const handleMouseLeave = (e: React.MouseEvent) => {
+  const handleMouseLeave = (e: MouseEvent) => {
     if (isPreview) return;
     e.stopPropagation();
     onHover(null, e);
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLElement>) => {
+  const handleBlur = (e: FocusEvent<HTMLElement>) => {
     if (isPreview) return;
     onUpdateContent(node.id, e.currentTarget.innerText || '');
   };
@@ -93,7 +93,7 @@ export const CanvasRenderer: React.FC<CanvasRendererProps> = ({
     );
   }
 
-  const Tag = (node.tag || 'div') as keyof React.JSX.IntrinsicElements;
+  const Tag = (node.tag || 'div') as keyof JSX.IntrinsicElements;
   const canEditInline = !isPreview && isSelected && node.children?.length === 0;
 
   return (

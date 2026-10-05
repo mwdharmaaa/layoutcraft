@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { PlusSquare, Layers, LayoutTemplate } from 'lucide-react';
 import type { LayoutNode } from '@/core/types/element.types';
 import type { SidebarTab } from '@/core/types/studio.types';
@@ -20,7 +20,7 @@ interface StudioSidebarProps {
   onSelectTemplate: (template: TemplateDefinition) => void;
 }
 
-export const StudioSidebar: React.FC<StudioSidebarProps> = ({
+export const StudioSidebar: FC<StudioSidebarProps> = ({
   activeTab,
   onTabChange,
   onInsertNode,

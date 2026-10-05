@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC, MouseEvent } from 'react';
 import type { LayoutNode } from '@/core/types/element.types';
 import type { DeviceViewport } from '@/core/types/studio.types';
 import { VIEWPORT_CONFIGS } from '@/core/constants/presets';
@@ -12,8 +12,8 @@ interface CanvasArtboardProps {
   zoom: number;
   showGrid: boolean;
   isPreview: boolean;
-  onSelect: (id: string, e: React.MouseEvent) => void;
-  onHover: (id: string | null, e: React.MouseEvent) => void;
+  onSelect: (id: string, e: MouseEvent) => void;
+  onHover: (id: string | null, e: MouseEvent) => void;
   onUpdateContent: (id: string, text: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -22,7 +22,7 @@ interface CanvasArtboardProps {
   onCanvasClick: () => void;
 }
 
-export const CanvasArtboard: React.FC<CanvasArtboardProps> = ({
+export const CanvasArtboard: FC<CanvasArtboardProps> = ({
   rootNode,
   selectedId,
   hoveredId,

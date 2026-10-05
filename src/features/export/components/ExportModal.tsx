@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FC, type ChangeEvent } from 'react';
 import { X, Copy, Check, Download, Upload, Code2 } from 'lucide-react';
 import type { LayoutNode } from '@/core/types/element.types';
 import {
@@ -16,7 +16,7 @@ interface ExportModalProps {
 
 type ExportTab = 'html' | 'react' | 'json';
 
-export const ExportModal: React.FC<ExportModalProps> = ({
+export const ExportModal: FC<ExportModalProps> = ({
   isOpen,
   onClose,
   rootNode,
@@ -52,7 +52,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { Sliders, Maximize2, Type, Palette } from 'lucide-react';
 import type { LayoutNode, ElementStyles } from '@/core/types/element.types';
 import type { InspectorTab } from '@/core/types/studio.types';
@@ -16,7 +16,7 @@ interface PropertyInspectorProps {
   onUpdateName: (name: string) => void;
 }
 
-export const PropertyInspector: React.FC<PropertyInspectorProps> = ({
+export const PropertyInspector: FC<PropertyInspectorProps> = ({
   selectedNode,
   activeTab,
   onTabChange,
@@ -36,7 +36,7 @@ export const PropertyInspector: React.FC<PropertyInspectorProps> = ({
     );
   }
 
-  const tabs: { id: InspectorTab; label: string; icon: React.FC<{ className?: string }> }[] = [
+  const tabs: { id: InspectorTab; label: string; icon: FC<{ className?: string }> }[] = [
     { id: 'layout', label: 'Layout', icon: Sliders },
     { id: 'spacing', label: 'Box', icon: Maximize2 },
     { id: 'typography', label: 'Type', icon: Type },

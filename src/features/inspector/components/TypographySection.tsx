@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import type { ElementStyles } from '@/core/types/element.types';
 import { COLOR_PALETTES } from '@/core/constants/presets';
 
@@ -7,7 +7,7 @@ interface TypographySectionProps {
   onChange: (patch: Partial<ElementStyles>) => void;
 }
 
-export const TypographySection: React.FC<TypographySectionProps> = ({ styles, onChange }) => {
+export const TypographySection: FC<TypographySectionProps> = ({ styles, onChange }) => {
   return (
     <div className="space-y-4 text-xs text-zinc-300">
       {/* Font Size & Weight */}

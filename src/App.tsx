@@ -1,4 +1,3 @@
-import React from 'react';
 import { StudioHeader } from '@/features/toolbar/components/StudioHeader';
 import { StudioSidebar } from '@/features/palette/components/StudioSidebar';
 import { CanvasArtboard } from '@/features/canvas/components/CanvasArtboard';

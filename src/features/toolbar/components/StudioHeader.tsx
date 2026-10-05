@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import {
   Monitor,
   Laptop,
@@ -34,7 +34,7 @@ interface StudioHeaderProps {
   onClearCanvas: () => void;
 }
 
-export const StudioHeader: React.FC<StudioHeaderProps> = ({
+export const StudioHeader: FC<StudioHeaderProps> = ({
   viewport,
   onViewportChange,
   zoom,

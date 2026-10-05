@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FC } from 'react';
 import { Box, Columns2, Grid2x2, LayoutGrid, Heading, Pilcrow, MousePointerClick, Tag, TextCursorInput, Search } from 'lucide-react';
 import { PALETTE_ITEMS, type PaletteItem } from '../constants/palette_items';
 
@@ -6,7 +6,7 @@ interface ComponentPaletteProps {
   onInsertNode: (item: PaletteItem) => void;
 }
 
-const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
+const ICON_MAP: Record<string, FC<{ className?: string }>> = {
   Box,
   Columns2,
   Grid2x2,
@@ -18,7 +18,7 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   TextCursorInput,
 };
 
-export const ComponentPalette: React.FC<ComponentPaletteProps> = ({ onInsertNode }) => {
+export const ComponentPalette: FC<ComponentPaletteProps> = ({ onInsertNode }) => {
   const [filter, setFilter] = useState('');
 
   const filteredItems = PALETTE_ITEMS.filter((item) =>

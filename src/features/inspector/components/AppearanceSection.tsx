@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import type { ElementStyles } from '@/core/types/element.types';
 import { COLOR_PALETTES, RADIUS_PRESETS, SHADOW_PRESETS } from '@/core/constants/presets';
 
@@ -7,7 +7,7 @@ interface AppearanceSectionProps {
   onChange: (patch: Partial<ElementStyles>) => void;
 }
 
-export const AppearanceSection: React.FC<AppearanceSectionProps> = ({ styles, onChange }) => {
+export const AppearanceSection: FC<AppearanceSectionProps> = ({ styles, onChange }) => {
   return (
     <div className="space-y-4 text-xs text-zinc-300">
       {/* Background Color */}

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { LayoutTemplate, Sparkles } from 'lucide-react';
 import { TEMPLATES_DATA, type TemplateDefinition } from '../constants/templates_data';
 
@@ -6,7 +6,7 @@ interface TemplatePickerProps {
   onSelectTemplate: (template: TemplateDefinition) => void;
 }
 
-export const TemplatePicker: React.FC<TemplatePickerProps> = ({ onSelectTemplate }) => {
+export const TemplatePicker: FC<TemplatePickerProps> = ({ onSelectTemplate }) => {
   return (
     <div className="flex flex-col h-full overflow-hidden select-none">
       <div className="p-3 border-b border-zinc-800 flex items-center gap-2">

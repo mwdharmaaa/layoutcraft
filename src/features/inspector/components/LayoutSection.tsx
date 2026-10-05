@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import type { ElementStyles, DisplayType, FlexDirection, FlexJustify, FlexAlign } from '@/core/types/element.types';
 
 interface LayoutSectionProps {
@@ -6,7 +6,7 @@ interface LayoutSectionProps {
   onChange: (patch: Partial<ElementStyles>) => void;
 }
 
-export const LayoutSection: React.FC<LayoutSectionProps> = ({ styles, onChange }) => {
+export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
   const display = styles.display || 'block';
 
   return (
