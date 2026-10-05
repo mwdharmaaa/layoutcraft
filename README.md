@@ -1,32 +1,67 @@
-# React + TypeScript + Vite
+# LayoutCraft Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+LayoutCraft is a visual frontend layout designer and canvas studio built with React 19, TypeScript, Vite, and Tailwind CSS. It enables engineers and designers to construct responsive layouts using intuitive Flexbox and CSS Grid controls, inspect and edit styling properties in real time, and export production-ready code in standard HTML/CSS, React JSX, or JSON project schemas.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Interactive Canvas Artboard**: Test layouts across Desktop (1280px), Laptop (1024px), Tablet (768px), and Mobile (375px) viewports with zoom and snap-to-grid guidelines.
+- **Visual Flexbox & Grid Engine**: Real-time controls for flex direction, alignment, distribution, wrapping, column templates, and gap spacing.
+- **Component Palette**: Instant insertion of structural sections, 2/3-column grids, flex rows, typography scales, buttons, badges, and input elements.
+- **DOM Layers Hierarchy**: Visual tree view of the component structure with expand/collapse, layer selection, visibility toggling, and deletion.
+- **Property Inspector**: Tabbed controls for Layout, Box Model (Padding/Margin/Dimensions), Typography, and Appearance (Background, Border, Radius, Shadow, Opacity).
+- **Inline Editing**: Double-click or select text elements to modify content directly on the canvas.
+- **Layout Presets**: Pre-built templates including SaaS Bento Grid, High-Conversion Pricing Comparison, and Blank Canvas.
+- **Multi-Format Code Exporter**: Instant generation of standard HTML/CSS, React TSX components, and JSON layout schemas with one-click clipboard copying and file downloads.
+- **History & Keyboard Shortcuts**:
+  - `Ctrl + Z`: Undo
+  - `Ctrl + Y`: Redo
+  - `Ctrl + D`: Duplicate selected element
+  - `Delete` / `Backspace`: Delete selected element
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+LayoutCraft follows Semantic Atomic Architecture principles:
+- **`src/core/types/`**: Element node interfaces, styling tokens, and studio state contracts.
+- **`src/core/utils/`**: Immutable tree algorithms and CSS converter engines.
+- **`src/core/constants/`**: Viewport configurations, color palettes, and default layouts.
+- **`src/features/canvas/`**: Recursive DOM renderer, responsive artboard, and state hooks.
+- **`src/features/palette/`**: Component palette catalog and left sidebar dock.
+- **`src/features/inspector/`**: Atomic property editors for layout, spacing, typography, and styling.
+- **`src/features/layers/`**: Hierarchical DOM tree navigator.
+- **`src/features/export/`**: Multi-target code synthesis and project import/export modal.
+- **`src/features/toolbar/`**: Studio top navigation and viewport switcher.
 
-## Expanding the Oxlint configuration
+## Quick Start
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+### Local Development
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Containerized Deployment (Docker)
+
+Launch the complete application via the single-enter deployment script:
+
+```bash
+bash deploy.sh
+```
+
+Or run Docker Compose directly:
+
+```bash
+docker compose up -d --build
+```
+
+Access the studio at `http://localhost:3000`.
+
+## License
+
+MIT License
