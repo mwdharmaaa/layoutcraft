@@ -13,12 +13,23 @@ LayoutCraft is a visual frontend layout designer and canvas studio built with Re
 - **Layout Presets**: Pre-built templates including SaaS Bento Grid, High-Conversion Pricing Comparison, and Blank Canvas.
 - **Multi-Format Code Exporter**: Instant generation of standard HTML/CSS, React TSX components, and JSON layout schemas with one-click clipboard copying and file downloads.
 - **History & Keyboard Shortcuts**:
-  - `Ctrl + Z`: Undo
-  - `Ctrl + Y`: Redo
   - `Ctrl + C`: Copy selected element
-  - `Ctrl + V`: Paste copied element or clipboard screenshot directly onto canvas
+  - `Ctrl + X`: Cut selected element
+  - `Ctrl + V`: Paste copied element or system screenshot image directly onto canvas
   - `Ctrl + D`: Duplicate selected element
   - `Delete` / `Backspace`: Delete selected element
+  - `Ctrl + Z`: Undo canvas modification
+  - `Ctrl + Y` / `Ctrl + Shift + Z`: Redo canvas modification
+  - `Alt + Up` / `Alt + Down`: Reorder element hierarchy position
+  - `Ctrl + H`: Toggle element visibility
+  - `Ctrl + +` / `Ctrl + -`: Zoom canvas in and out
+  - `Ctrl + 0`: Reset canvas zoom to 100%
+  - `Ctrl + G`: Toggle canvas grid alignment
+  - `Ctrl + P`: Toggle preview mode
+  - `Ctrl + E`: Open code export modal
+  - `Ctrl + S`: Quick save state to session
+  - `Esc`: Deselect element or dismiss modal
+  - `?` / `Ctrl + /`: Display keyboard shortcuts guide
 
 ## Architecture
 
