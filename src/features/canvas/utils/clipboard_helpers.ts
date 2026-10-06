@@ -52,8 +52,69 @@ export function extractImageFromClipboard(
       }
     }
 
+    // 3. Fallback to HTML img tag extraction
+    const html = clipboardData.getData('text/html');
+    if (html) {
+      const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (match && match[1]) {
+        resolve(match[1]);
+        return;
+      }
+    }
+
+    // 4. Fallback to direct image data-url or image link in plain text
+    const text = clipboardData.getData('text/plain')?.trim();
+    if (text) {
+      if (text.startsWith('data:image/')) {
+        resolve(text);
+        return;
+      }
+      if (/^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(text)) {
+        resolve(text);
+        return;
+      }
+    }
+
     resolve(null);
   });
+}
+
+export function extractNodeFromClipboard(
+  clipboardData: DataTransfer | null
+): import('@/core/types/element.types').LayoutNode | null {
+  if (!clipboardData) return null;
+  const text = clipboardData.getData('text/plain')?.trim();
+  if (!text || !text.startsWith('{')) return null;
+
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
+      return parsed;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export async function extractNodeFromSystemClipboard(): Promise<
+  import('@/core/types/element.types').LayoutNode | null
+> {
+  if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
+    return null;
+  }
+
+  try {
+    const text = (await navigator.clipboard.readText()).trim();
+    if (!text || !text.startsWith('{')) return null;
+    const parsed = JSON.parse(text);
+    if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
+      return parsed;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export async function extractImageFromSystemClipboard(): Promise<string | null> {
