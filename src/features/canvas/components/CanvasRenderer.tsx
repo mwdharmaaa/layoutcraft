@@ -30,23 +30,16 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
   onMoveUp,
   onMoveDown,
 }) => {
-  if (node.isHidden) return null;
-
   const [isEditing, setIsEditing] = useState(false);
   const spanRef = useRef<HTMLSpanElement | null>(null);
 
   const isSelected = !isPreview && selectedId === node.id;
   const isHovered = !isPreview && hoveredId === node.id && !isSelected;
+  const isEditingActive = isSelected && isEditing;
   const cssStyle = stylesToCssProperties(node.styles);
 
   useEffect(() => {
-    if (!isSelected) {
-      setIsEditing(false);
-    }
-  }, [isSelected]);
-
-  useEffect(() => {
-    if (isEditing && spanRef.current) {
+    if (isEditingActive && spanRef.current) {
       spanRef.current.focus();
       try {
         const range = document.createRange();
@@ -59,7 +52,9 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
         // Fallback if range creation fails
       }
     }
-  }, [isEditing]);
+  }, [isEditingActive]);
+
+  if (node.isHidden) return null;
 
   const handleClick = (e: MouseEvent) => {
     if (isPreview) return;
@@ -162,7 +157,7 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
 
   const Tag = (node.tag || 'div') as keyof JSX.IntrinsicElements;
   const isLeafText = !node.children || node.children.length === 0;
-  const canEditInline = !isPreview && isSelected && isEditing && isLeafText;
+  const canEditInline = !isPreview && isEditingActive && isLeafText;
 
   return (
     <Tag {...commonProps}>
