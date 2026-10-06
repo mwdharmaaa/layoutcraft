@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { LayoutNode } from '@/core/types/element.types';
 import type { ToastMessage } from '@/core/types/shortcut.types';
+import { findNodeById } from '@/core/utils/tree_operations';
 import {
   extractImageFromClipboard,
   extractNodeFromClipboard,
@@ -86,110 +87,121 @@ export function useKeyboardShortcuts({
       if (now - lastPasteTimeRef.current < 150) return;
       lastPasteTimeRef.current = now;
 
-      // 1. Try extracting image from provided event dataTransfer
-      if (dataTransfer) {
-        const imgData = await extractImageFromClipboard(dataTransfer);
-        if (imgData) {
-          onPasteImage(imgData);
+      // ─────────────────────────────────────────────────────────────
+      // BRANCH A: Ctrl + Shift + V -> Dedicated Screenshot Pasting ("paste gambar hasil ssan")
+      // ─────────────────────────────────────────────────────────────
+      if (isShiftPressed) {
+        // 1. Try extracting image from provided event dataTransfer
+        if (dataTransfer) {
+          const imgData = await extractImageFromClipboard(dataTransfer);
+          if (imgData) {
+            onPasteImage(imgData);
+            showToast('Screenshot pasted to canvas', 'success');
+            return;
+          }
+        }
+
+        // 2. Try parsing fallback data:image from textarea catcher
+        if (catcherValue && catcherValue.trim().startsWith('data:image/')) {
+          onPasteImage(catcherValue.trim());
           showToast('Screenshot pasted to canvas', 'success');
           return;
         }
 
-        // 2. Try extracting LayoutNode JSON from dataTransfer text/plain
-        const parsedNode = extractNodeFromClipboard(dataTransfer);
-        if (parsedNode) {
-          onPasteNode(parsedNode, isShiftPressed);
-          showToast(
-            isShiftPressed ? 'Component pasted in-place' : 'Component pasted to canvas',
-            'success'
-          );
+        // 3. Query system clipboard for image blob / screenshot
+        const systemImg = await extractImageFromSystemClipboard(200);
+        if (systemImg) {
+          onPasteImage(systemImg);
+          showToast('Screenshot pasted to canvas', 'success');
           return;
         }
 
-        // 3. Try extracting plain text from dataTransfer
-        const plainText = extractTextFromClipboard(dataTransfer);
-        if (plainText) {
-          if (plainText.startsWith('data:image/')) {
-            onPasteImage(plainText);
-            showToast('Screenshot pasted to canvas', 'success');
-            return;
-          }
-          if (onPasteText) {
-            onPasteText(plainText);
-            showToast('Text pasted to canvas', 'success');
-            return;
-          }
+        showToast('No screenshot found in clipboard (take screenshot with Win+Shift+S first)', 'warning');
+        return;
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // BRANCH B: Ctrl + V -> Copy & Paste Element / Image ("coppy n paste gambar / elemen")
+      // ─────────────────────────────────────────────────────────────
+      const notifyNodePasted = (node: LayoutNode) => {
+        const isImage = node.tag === 'img';
+        showToast(isImage ? 'Image pasted to canvas' : 'Component pasted to canvas', 'success');
+      };
+
+      // 1. In-memory copied node takes highest priority for copy-paste
+      if (clipboardNode) {
+        onPasteNode(clipboardNode, false);
+        notifyNodePasted(clipboardNode);
+        return;
+      }
+
+      // 2. Try extracting LayoutNode JSON from dataTransfer text/plain
+      if (dataTransfer) {
+        const parsedNode = extractNodeFromClipboard(dataTransfer);
+        if (parsedNode) {
+          onPasteNode(parsedNode, false);
+          notifyNodePasted(parsedNode);
+          return;
         }
       }
 
-      // 4. Try parsing fallback text from the textarea catcher
+      // 3. Try parsing LayoutNode JSON from textarea catcher fallback
       if (catcherValue && catcherValue.trim()) {
         const trimmed = catcherValue.trim();
         if (trimmed.startsWith('{')) {
           try {
             const parsed = JSON.parse(trimmed);
             if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
-              onPasteNode(parsed, isShiftPressed);
-              showToast(
-                isShiftPressed ? 'Component pasted in-place' : 'Component pasted to canvas',
-                'success'
-              );
+              onPasteNode(parsed, false);
+              notifyNodePasted(parsed);
               return;
             }
           } catch {
             // Ignore parse error
           }
         }
-        if (trimmed.startsWith('data:image/')) {
-          onPasteImage(trimmed);
-          showToast('Screenshot pasted to canvas', 'success');
-          return;
-        }
-        if (onPasteText) {
-          onPasteText(trimmed);
-          showToast('Text pasted to canvas', 'success');
-          return;
-        }
       }
 
-      // 5. In-memory copied node takes priority over slow or blocked system clipboard
-      if (clipboardNode) {
-        onPasteNode(clipboardNode, isShiftPressed);
-        showToast(
-          isShiftPressed ? 'Component pasted in-place' : 'Component pasted to canvas',
-          'success'
-        );
-        return;
-      }
-
-      // 6. Query system clipboard with bounded timeout (never hangs)
-      const systemImg = await extractImageFromSystemClipboard(150);
-      if (systemImg) {
-        onPasteImage(systemImg);
-        showToast('Screenshot pasted to canvas', 'success');
-        return;
-      }
-
+      // 4. Try querying system clipboard for LayoutNode JSON
       const systemNode = await extractNodeFromSystemClipboard(150);
       if (systemNode) {
-        onPasteNode(systemNode, isShiftPressed);
-        showToast(
-          isShiftPressed ? 'Component pasted in-place' : 'Component pasted to canvas',
-          'success'
-        );
+        onPasteNode(systemNode, false);
+        notifyNodePasted(systemNode);
         return;
       }
 
-      const systemText = await extractTextFromSystemClipboard(150);
-      if (systemText) {
+      // 5. Try plain text insertion from dataTransfer, catcher, or system clipboard
+      let textToPaste: string | null = null;
+      if (dataTransfer) {
+        textToPaste = extractTextFromClipboard(dataTransfer);
+      }
+      if (!textToPaste && catcherValue && catcherValue.trim() && !catcherValue.trim().startsWith('{')) {
+        textToPaste = catcherValue.trim();
+      }
+      if (!textToPaste) {
+        textToPaste = await extractTextFromSystemClipboard(150);
+      }
+
+      if (textToPaste && !textToPaste.startsWith('data:image/')) {
         if (onPasteText) {
-          onPasteText(systemText);
+          onPasteText(textToPaste);
           showToast('Text pasted to canvas', 'success');
           return;
         }
       }
 
-      showToast('Clipboard is empty or unsupported format', 'warning');
+      // 6. If user pressed Ctrl+V but clipboard only holds a screenshot/image, guide them to Ctrl+Shift+V
+      const hasImage =
+        hasImageInClipboardData(dataTransfer ?? null) ||
+        Boolean(catcherValue?.trim().startsWith('data:image/')) ||
+        Boolean(await extractImageFromSystemClipboard(100));
+
+      if (hasImage) {
+        showToast('Press Ctrl+Shift+V to paste screenshot image', 'info');
+        return;
+      }
+
+      showToast('Clipboard is empty. Copy an element first (Ctrl+C)', 'warning');
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -250,18 +262,21 @@ export function useKeyboardShortcuts({
         }
       }
 
+      const selectedNode = selectedId ? findNodeById(rootNode, selectedId) : null;
+      const isImageSelected = selectedNode?.tag === 'img';
+
       if (isCtrlOrMeta && (e.key === 'c' || e.key === 'C') && isSelected) {
         e.preventDefault();
         onCopy(selectedId!);
-        showToast('Element copied to clipboard', 'default');
+        showToast(isImageSelected ? 'Image copied to clipboard' : 'Element copied to clipboard', 'default');
       } else if (isCtrlOrMeta && (e.key === 'x' || e.key === 'X') && isSelected) {
         e.preventDefault();
         onCut(selectedId!);
-        showToast('Element cut to clipboard', 'default');
+        showToast(isImageSelected ? 'Image cut to clipboard' : 'Element cut to clipboard', 'default');
       } else if (isCtrlOrMeta && (e.key === 'd' || e.key === 'D') && isSelected) {
         e.preventDefault();
         onDuplicate(selectedId!);
-        showToast('Element duplicated', 'default');
+        showToast(isImageSelected ? 'Image duplicated' : 'Element duplicated', 'default');
       } else if (isCtrlOrMeta && (e.key === 'z' || e.key === 'Z')) {
         e.preventDefault();
         if (e.shiftKey) {
@@ -346,8 +361,9 @@ export function useKeyboardShortcuts({
               e.preventDefault();
               e.stopPropagation();
               pasteHandledRef.current = true;
-              onPasteNode(parsed, lastShiftRef.current);
-              showToast('Component pasted to canvas', 'success');
+              onPasteNode(parsed, false);
+              const isImage = parsed.tag === 'img';
+              showToast(isImage ? 'Image pasted to canvas' : 'Component pasted to canvas', 'success');
               return;
             }
           }
