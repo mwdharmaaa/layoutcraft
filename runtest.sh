@@ -5,7 +5,10 @@ echo "======================================================"
 echo "  LayoutCraft Studio - Test Suite & Verification"
 echo "======================================================"
 
-echo "[*] Step 1: Typecheck and Production Compilation..."
+echo "[*] Step 1: Code Linting..."
+npm run lint
+
+echo "[*] Step 2: Production Compilation..."
 npm run build
 
 echo "======================================================"

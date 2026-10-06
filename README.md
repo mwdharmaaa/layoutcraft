@@ -1,6 +1,6 @@
 # LayoutCraft Studio
 
-LayoutCraft is a visual frontend layout designer and canvas studio built with React 19, TypeScript, Vite, and Tailwind CSS. It enables engineers and designers to construct responsive layouts using intuitive Flexbox and CSS Grid controls, inspect and edit styling properties in real time, and export production-ready code in standard HTML/CSS, React JSX, or JSON project schemas.
+LayoutCraft is a visual frontend layout designer and canvas studio built with React 19, JavaScript (ESM + JSX), Vite, and Tailwind CSS. It enables engineers and designers to construct responsive layouts using intuitive Flexbox and CSS Grid controls, inspect and edit styling properties in real time, and export production-ready code in standard HTML/CSS, React JSX, or JSON project schemas.
 
 ## Features
 
@@ -11,7 +11,7 @@ LayoutCraft is a visual frontend layout designer and canvas studio built with Re
 - **Property Inspector**: Tabbed controls for Layout, Box Model (Padding/Margin/Dimensions), Typography, and Appearance (Background, Border, Radius, Shadow, Opacity).
 - **Inline Editing**: Double-click or select text elements to modify content directly on the canvas.
 - **Layout Presets**: Pre-built templates including SaaS Bento Grid, High-Conversion Pricing Comparison, and Blank Canvas.
-- **Multi-Format Code Exporter**: Instant generation of standard HTML/CSS, React TSX components, and JSON layout schemas with one-click clipboard copying and file downloads.
+- **Multi-Format Code Exporter**: Instant generation of standard HTML/CSS, React JSX components, and JSON layout schemas with one-click clipboard copying and file downloads.
 - **History & Keyboard Shortcuts**:
   - `Ctrl + C`: Copy selected element
   - `Ctrl + X`: Cut selected element
