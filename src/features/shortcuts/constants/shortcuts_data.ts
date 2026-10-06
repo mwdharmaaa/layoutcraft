@@ -23,6 +23,13 @@ export const SHORTCUTS_DATA: ShortcutItem[] = [
     category: 'clipboard',
   },
   {
+    id: 'paste-in-place',
+    name: 'Paste In-Place / Plain Text',
+    description: 'Paste screenshot, element in-place, or unformatted plain text onto canvas',
+    keys: ['Ctrl', 'Shift', 'V'],
+    category: 'clipboard',
+  },
+  {
     id: 'duplicate',
     name: 'Duplicate Element',
     description: 'Create an exact duplicate of the selected element',
