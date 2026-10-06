@@ -3,7 +3,6 @@ import type { LayoutNode } from '@/core/types/element.types';
 import type { DeviceViewport } from '@/core/types/studio.types';
 import { VIEWPORT_CONFIGS } from '@/core/constants/presets';
 import { CanvasRenderer } from './CanvasRenderer';
-import { extractImageFromClipboard } from '../utils/clipboard_helpers';
 
 interface CanvasArtboardProps {
   rootNode: LayoutNode;
@@ -74,20 +73,6 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
-    if (!onPasteImage) return;
-    const clipboardData = e.clipboardData;
-    if (clipboardData) {
-      extractImageFromClipboard(clipboardData).then((imgData) => {
-        if (imgData) {
-          e.preventDefault();
-          e.stopPropagation();
-          onPasteImage(imgData);
-        }
-      });
-    }
-  };
-
   return (
     <div
       ref={artboardRef}
@@ -99,7 +84,6 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
         artboardRef.current?.focus();
         onCanvasClick();
       }}
-      onPaste={handlePaste}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
