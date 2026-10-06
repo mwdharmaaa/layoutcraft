@@ -1,12 +1,6 @@
-import type { FC } from 'react';
-import type { ToastMessage } from '@/core/types/shortcut.types';
 import { Check, Info, AlertCircle } from 'lucide-react';
 
-interface ToastNotificationProps {
-  toasts: ToastMessage[];
-}
-
-export const ToastNotification: FC<ToastNotificationProps> = ({ toasts }) => {
+export const ToastNotification = ({ toasts = [] }) => {
   if (toasts.length === 0) return null;
 
   return (

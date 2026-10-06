@@ -1,23 +1,17 @@
-import type { FC } from 'react';
 import { X, Command, Keyboard } from 'lucide-react';
 import { SHORTCUTS_DATA } from '../constants/shortcuts_data';
 
-interface ShortcutsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const CATEGORY_TITLES: Record<string, string> = {
+const CATEGORY_TITLES = {
   clipboard: 'Clipboard & Elements',
   canvas: 'Canvas & History',
   navigation: 'Zoom & Viewport',
   studio: 'Studio Operations',
 };
 
-export const ShortcutsModal: FC<ShortcutsModalProps> = ({ isOpen, onClose }) => {
+export const ShortcutsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const categories = ['clipboard', 'canvas', 'navigation', 'studio'] as const;
+  const categories = ['clipboard', 'canvas', 'navigation', 'studio'];
 
   return (
     <div

@@ -1,15 +1,6 @@
-import type { LayoutNode } from '@/core/types/element.types';
-import { DEFAULT_LAYOUT } from '@/core/constants/default_layout';
+﻿import { DEFAULT_LAYOUT } from '@/core/constants/default_layout';
 
-export interface TemplateDefinition {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  root: LayoutNode;
-}
-
-export const TEMPLATES_DATA: TemplateDefinition[] = [
+export const TEMPLATES_DATA = [
   {
     id: 'bento-saas',
     name: 'Modern SaaS Bento',

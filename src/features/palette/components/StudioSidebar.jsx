@@ -1,26 +1,9 @@
-import type { FC } from 'react';
 import { PlusSquare, Layers, LayoutTemplate } from 'lucide-react';
-import type { LayoutNode } from '@/core/types/element.types';
-import type { SidebarTab } from '@/core/types/studio.types';
-import type { PaletteItem } from '../constants/palette_items';
-import type { TemplateDefinition } from '@/features/templates/constants/templates_data';
 import { ComponentPalette } from './ComponentPalette';
 import { LayersTree } from '@/features/layers/components/LayersTree';
 import { TemplatePicker } from '@/features/templates/components/TemplatePicker';
 
-interface StudioSidebarProps {
-  activeTab: SidebarTab;
-  onTabChange: (tab: SidebarTab) => void;
-  onInsertNode: (item: PaletteItem) => void;
-  rootNode: LayoutNode;
-  selectedId: string | null;
-  onSelectNode: (id: string) => void;
-  onToggleVisibility: (id: string) => void;
-  onDeleteNode: (id: string) => void;
-  onSelectTemplate: (template: TemplateDefinition) => void;
-}
-
-export const StudioSidebar: FC<StudioSidebarProps> = ({
+export const StudioSidebar = ({
   activeTab,
   onTabChange,
   onInsertNode,
@@ -32,9 +15,9 @@ export const StudioSidebar: FC<StudioSidebarProps> = ({
   onSelectTemplate,
 }) => {
   const tabs = [
-    { id: 'components' as SidebarTab, label: 'Blocks', icon: PlusSquare },
-    { id: 'layers' as SidebarTab, label: 'Layers', icon: Layers },
-    { id: 'templates' as SidebarTab, label: 'Presets', icon: LayoutTemplate },
+    { id: 'components', label: 'Blocks', icon: PlusSquare },
+    { id: 'layers', label: 'Layers', icon: Layers },
+    { id: 'templates', label: 'Presets', icon: LayoutTemplate },
   ];
 
   return (

@@ -1,12 +1,8 @@
-import { useState, type FC } from 'react';
+import { useState } from 'react';
 import { Box, Columns2, Grid2x2, LayoutGrid, Heading, Pilcrow, MousePointerClick, Tag, TextCursorInput, Search } from 'lucide-react';
-import { PALETTE_ITEMS, type PaletteItem } from '../constants/palette_items';
+import { PALETTE_ITEMS } from '../constants/palette_items';
 
-interface ComponentPaletteProps {
-  onInsertNode: (item: PaletteItem) => void;
-}
-
-const ICON_MAP: Record<string, FC<{ className?: string }>> = {
+const ICON_MAP = {
   Box,
   Columns2,
   Grid2x2,
@@ -18,14 +14,14 @@ const ICON_MAP: Record<string, FC<{ className?: string }>> = {
   TextCursorInput,
 };
 
-export const ComponentPalette: FC<ComponentPaletteProps> = ({ onInsertNode }) => {
+export const ComponentPalette = ({ onInsertNode }) => {
   const [filter, setFilter] = useState('');
 
   const filteredItems = PALETTE_ITEMS.filter((item) =>
     item.name.toLowerCase().includes(filter.toLowerCase())
   );
 
-  const categories = ['layout', 'typography', 'ui'] as const;
+  const categories = ['layout', 'typography', 'ui'];
 
   return (
     <div className="flex flex-col h-full overflow-hidden select-none">

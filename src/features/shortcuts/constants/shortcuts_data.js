@@ -1,6 +1,4 @@
-import type { ShortcutItem } from '@/core/types/shortcut.types';
-
-export const SHORTCUTS_DATA: ShortcutItem[] = [
+﻿export const SHORTCUTS_DATA = [
   {
     id: 'copy',
     name: 'Copy Element',
@@ -61,14 +59,14 @@ export const SHORTCUTS_DATA: ShortcutItem[] = [
     id: 'move-up',
     name: 'Reorder Element Up',
     description: 'Move current element one position up among its siblings',
-    keys: ['Alt', '↑'],
+    keys: ['Alt', 'â†‘'],
     category: 'canvas',
   },
   {
     id: 'move-down',
     name: 'Reorder Element Down',
     description: 'Move current element one position down among its siblings',
-    keys: ['Alt', '↓'],
+    keys: ['Alt', 'â†“'],
     category: 'canvas',
   },
   {

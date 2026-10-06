@@ -1,15 +1,6 @@
-import type { LayoutNode } from '@/core/types/element.types';
-import { generateElementId } from '@/core/utils/id_generator';
+﻿import { generateElementId } from '@/core/utils/id_generator';
 
-export interface PaletteItem {
-  id: string;
-  name: string;
-  category: 'layout' | 'typography' | 'ui';
-  icon: string;
-  createNode: () => LayoutNode;
-}
-
-export const PALETTE_ITEMS: PaletteItem[] = [
+export const PALETTE_ITEMS = [
   // Layout Items
   {
     id: 'container-section',
