@@ -63,8 +63,7 @@ export function extractImageFromClipboard(
         const file = files[i];
         if (
           file.type.startsWith('image/') ||
-          /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(file.name) ||
-          file.type === ''
+          /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(file.name)
         ) {
           readFile(file);
           return;
@@ -77,7 +76,7 @@ export function extractImageFromClipboard(
     if (items && items.length > 0) {
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        if (item.type.startsWith('image/') || item.kind === 'file') {
+        if (item.type.startsWith('image/')) {
           const file = item.getAsFile();
           if (file) {
             readFile(file);
@@ -142,68 +141,103 @@ export function extractNodeFromClipboard(
   return null;
 }
 
-export async function extractNodeFromSystemClipboard(): Promise<
-  import('@/core/types/element.types').LayoutNode | null
-> {
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        resolve(fallback);
+      }
+    }, ms);
+    promise
+      .then((val) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          resolve(val);
+        }
+      })
+      .catch(() => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timer);
+          resolve(fallback);
+        }
+      });
+  });
+}
+
+export async function extractNodeFromSystemClipboard(
+  timeoutMs: number = 200
+): Promise<import('@/core/types/element.types').LayoutNode | null> {
   if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
     return null;
   }
 
-  try {
-    const text = (await navigator.clipboard.readText()).trim();
-    if (!text || !text.startsWith('{')) return null;
-    const parsed = JSON.parse(text);
-    if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
-      return parsed;
+  const queryAsync = async () => {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      if (!text || !text.startsWith('{')) return null;
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
+        return parsed;
+      }
+    } catch {
+      return null;
     }
-  } catch {
     return null;
-  }
-  return null;
+  };
+
+  return withTimeout(queryAsync(), timeoutMs, null);
 }
 
-export async function extractImageFromSystemClipboard(): Promise<string | null> {
+export async function extractImageFromSystemClipboard(timeoutMs: number = 200): Promise<string | null> {
   if (!navigator.clipboard) {
     return null;
   }
 
-  if (typeof navigator.clipboard.read === 'function') {
-    try {
-      const items = await navigator.clipboard.read();
-      for (const item of items) {
-        const imageType = item.types.find((t) => t.startsWith('image/'));
-        if (imageType) {
-          const blob = await item.getType(imageType);
-          return await new Promise<string | null>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              resolve(typeof ev.target?.result === 'string' ? ev.target.result : null);
-            };
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-          });
+  const queryAsync = async (): Promise<string | null> => {
+    if (typeof navigator.clipboard.read === 'function') {
+      try {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          const imageType = item.types.find((t) => t.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            return await new Promise<string | null>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                resolve(typeof ev.target?.result === 'string' ? ev.target.result : null);
+              };
+              reader.onerror = () => resolve(null);
+              reader.readAsDataURL(blob);
+            });
+          }
         }
+      } catch {
+        // Permission denied or reading blobs unsupported
       }
-    } catch {
-      // Permission denied or reading blobs unsupported in current context
     }
-  }
 
-  if (typeof navigator.clipboard.readText === 'function') {
-    try {
-      const text = (await navigator.clipboard.readText()).trim();
-      if (text.startsWith('data:image/')) {
-        return text;
+    if (typeof navigator.clipboard.readText === 'function') {
+      try {
+        const text = (await navigator.clipboard.readText()).trim();
+        if (text.startsWith('data:image/')) {
+          return text;
+        }
+        if (/^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(text)) {
+          return text;
+        }
+      } catch {
+        // Ignore readText failure
       }
-      if (/^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(text)) {
-        return text;
-      }
-    } catch {
-      // Ignore readText failure
     }
-  }
 
-  return null;
+    return null;
+  };
+
+  return withTimeout(queryAsync(), timeoutMs, null);
 }
 
 export function extractTextFromClipboard(clipboardData: DataTransfer | null): string | null {
@@ -212,14 +246,18 @@ export function extractTextFromClipboard(clipboardData: DataTransfer | null): st
   return text || null;
 }
 
-export async function extractTextFromSystemClipboard(): Promise<string | null> {
+export async function extractTextFromSystemClipboard(timeoutMs: number = 200): Promise<string | null> {
   if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
     return null;
   }
-  try {
-    const text = (await navigator.clipboard.readText()).trim();
-    return text || null;
-  } catch {
-    return null;
-  }
+  const queryAsync = async () => {
+    try {
+      const text = (await navigator.clipboard.readText()).trim();
+      return text || null;
+    } catch {
+      return null;
+    }
+  };
+
+  return withTimeout(queryAsync(), timeoutMs, null);
 }
