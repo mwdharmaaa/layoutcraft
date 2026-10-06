@@ -247,26 +247,31 @@ export function useStudioState() {
     [selectedId, rootNode, pushState]
   );
 
-  const handlePasteImage = useCallback((dataUrl: string) => {
-    const imgNode: LayoutNode = {
-      id: generateElementId('img'),
-      name: 'Screenshot Image',
-      tag: 'img',
-      category: 'media',
-      attributes: {
-        src: dataUrl,
-        alt: 'Pasted Screenshot',
-      },
-      styles: {
-        width: '100%',
-        maxWidth: '720px',
-        height: 'auto',
-        borderRadius: '8px',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
-        marginTop: '12px',
-        marginBottom: '12px',
-      },
-    };
+  const handlePasteImage = useCallback(
+    (
+      dataUrl: string,
+      options?: { name?: string; alt?: string; isScreenshot?: boolean }
+    ) => {
+      const isScreenshot = options?.isScreenshot ?? false;
+      const imgNode: LayoutNode = {
+        id: generateElementId('img'),
+        name: options?.name ?? (isScreenshot ? 'Screenshot Image' : 'Image'),
+        tag: 'img',
+        category: 'media',
+        attributes: {
+          src: dataUrl,
+          alt: options?.alt ?? (isScreenshot ? 'Pasted Screenshot' : 'Copied Image'),
+        },
+        styles: {
+          width: '100%',
+          maxWidth: '720px',
+          height: 'auto',
+          borderRadius: '8px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
+          marginTop: '12px',
+          marginBottom: '12px',
+        },
+      };
 
     const targetParentId = selectedId || rootNode.id;
     const targetParent = findNodeById(rootNode, targetParentId);

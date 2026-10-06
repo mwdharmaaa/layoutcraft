@@ -20,7 +20,10 @@ interface CanvasArtboardProps {
   onMoveUp?: (id: string) => void;
   onMoveDown?: (id: string) => void;
   onCanvasClick: () => void;
-  onPasteImage?: (dataUrl: string) => void;
+  onPasteImage?: (
+    dataUrl: string,
+    options?: { name?: string; alt?: string; isScreenshot?: boolean }
+  ) => void;
 }
 
 export const CanvasArtboard: FC<CanvasArtboardProps> = ({
@@ -63,7 +66,11 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
           const reader = new FileReader();
           reader.onload = (loadEv) => {
             if (typeof loadEv.target?.result === 'string') {
-              onPasteImage?.(loadEv.target.result);
+              onPasteImage?.(loadEv.target.result, {
+                name: file.name.replace(/\.[^.]+$/, '') || 'Image',
+                alt: 'Dropped Image',
+                isScreenshot: false,
+              });
             }
           };
           reader.readAsDataURL(file);
