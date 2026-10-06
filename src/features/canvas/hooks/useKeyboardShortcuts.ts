@@ -3,7 +3,9 @@ import type { LayoutNode } from '@/core/types/element.types';
 import type { ToastMessage } from '@/core/types/shortcut.types';
 import {
   extractImageFromClipboard,
+  extractNodeFromClipboard,
   extractImageFromSystemClipboard,
+  extractNodeFromSystemClipboard,
 } from '../utils/clipboard_helpers';
 
 interface UseKeyboardShortcutsParams {
@@ -14,7 +16,7 @@ interface UseKeyboardShortcutsParams {
   onRedo: () => void;
   onCopy: (id: string) => void;
   onCut: (id: string) => void;
-  onPasteNode: () => void;
+  onPasteNode: (node?: LayoutNode) => void;
   onPasteImage: (dataUrl: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -52,11 +54,12 @@ export function useKeyboardShortcuts({
   showToast,
 }: UseKeyboardShortcutsParams) {
   const lastPasteTimeRef = useRef<number>(0);
+  const pasteHandledRef = useRef<boolean>(false);
 
   useEffect(() => {
     const handlePasteAction = async (dataTransfer?: DataTransfer | null) => {
       const now = Date.now();
-      if (now - lastPasteTimeRef.current < 400) return;
+      if (now - lastPasteTimeRef.current < 250) return;
       lastPasteTimeRef.current = now;
 
       // 1. Try extracting image from provided event dataTransfer
@@ -67,9 +70,24 @@ export function useKeyboardShortcuts({
           showToast('Screenshot pasted to canvas', 'success');
           return;
         }
+
+        // 2. Try extracting LayoutNode JSON from dataTransfer text/plain
+        const parsedNode = extractNodeFromClipboard(dataTransfer);
+        if (parsedNode) {
+          onPasteNode(parsedNode);
+          showToast('Component pasted to canvas', 'success');
+          return;
+        }
       }
 
-      // 2. Try async reading image from system navigator.clipboard
+      // 3. Fallback to in-memory copied node
+      if (clipboardNode) {
+        onPasteNode(clipboardNode);
+        showToast('Component pasted to canvas', 'success');
+        return;
+      }
+
+      // 4. Try async reading image from system navigator.clipboard
       const systemImg = await extractImageFromSystemClipboard();
       if (systemImg) {
         onPasteImage(systemImg);
@@ -77,9 +95,10 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // 3. Fallback to in-memory copied node
-      if (clipboardNode) {
-        onPasteNode();
+      // 5. Try async reading LayoutNode JSON from system navigator.clipboard
+      const systemNode = await extractNodeFromSystemClipboard();
+      if (systemNode) {
+        onPasteNode(systemNode);
         showToast('Component pasted to canvas', 'success');
         return;
       }
@@ -89,21 +108,39 @@ export function useKeyboardShortcuts({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (
+      const isInput =
         target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target?.isContentEditable
-      ) {
+        target instanceof HTMLTextAreaElement;
+
+      if (isInput) {
         return;
       }
 
       const isCtrlOrMeta = e.ctrlKey || e.metaKey;
       const isSelected = Boolean(selectedId && selectedId !== rootNode.id);
 
+      // Allow browser to emit native paste event for Ctrl+V with fallback
       if (isCtrlOrMeta && (e.key === 'v' || e.key === 'V')) {
-        e.preventDefault();
-        handlePasteAction(null);
-      } else if (isCtrlOrMeta && (e.key === 'c' || e.key === 'C') && isSelected) {
+        pasteHandledRef.current = false;
+        setTimeout(() => {
+          if (!pasteHandledRef.current) {
+            handlePasteAction(null);
+          }
+        }, 60);
+        return;
+      }
+
+      if (target?.isContentEditable) {
+        if (isCtrlOrMeta && (e.key === 'c' || e.key === 'C')) {
+          const hasSelection = Boolean(window.getSelection()?.toString().trim());
+          if (hasSelection) return;
+        }
+        if (!isCtrlOrMeta && e.key !== 'Escape') {
+          return;
+        }
+      }
+
+      if (isCtrlOrMeta && (e.key === 'c' || e.key === 'C') && isSelected) {
         e.preventDefault();
         onCopy(selectedId!);
         showToast('Element copied to clipboard', 'default');
@@ -177,14 +214,37 @@ export function useKeyboardShortcuts({
 
     const handlePasteEvent = (e: ClipboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (
+      const isInput =
         target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target?.isContentEditable
-      ) {
+        target instanceof HTMLTextAreaElement;
+
+      const hasImage =
+        e.clipboardData?.files &&
+        Array.from(e.clipboardData.files).some((f) => f.type.startsWith('image/'));
+
+      // In real inputs, allow native paste if plain text
+      if (isInput && !hasImage) {
         return;
       }
+
+      // In contentEditable text spans, allow native text paste unless it is serialized node JSON
+      if (target?.isContentEditable && !hasImage) {
+        const text = e.clipboardData?.getData('text/plain')?.trim();
+        if (text?.startsWith('{')) {
+          const parsed = extractNodeFromClipboard(e.clipboardData);
+          if (parsed) {
+            e.preventDefault();
+            pasteHandledRef.current = true;
+            onPasteNode(parsed);
+            showToast('Component pasted to canvas', 'success');
+            return;
+          }
+        }
+        return;
+      }
+
       e.preventDefault();
+      pasteHandledRef.current = true;
       handlePasteAction(e.clipboardData);
     };
 
