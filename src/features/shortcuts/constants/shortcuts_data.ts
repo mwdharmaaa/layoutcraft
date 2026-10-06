@@ -17,8 +17,8 @@ export const SHORTCUTS_DATA: ShortcutItem[] = [
   },
   {
     id: 'paste',
-    name: 'Paste Element / Image',
-    description: 'Paste copied element or canvas image from clipboard onto canvas',
+    name: 'Paste Element / Copied Image',
+    description: 'Paste copied element or copied image from clipboard onto canvas',
     keys: ['Ctrl', 'V'],
     category: 'clipboard',
   },

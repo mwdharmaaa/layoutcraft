@@ -15,7 +15,7 @@ LayoutCraft is a visual frontend layout designer and canvas studio built with Re
 - **History & Keyboard Shortcuts**:
   - `Ctrl + C`: Copy selected element
   - `Ctrl + X`: Cut selected element
-  - `Ctrl + V`: Paste copied element or canvas image from clipboard
+  - `Ctrl + V`: Paste copied element or copied image from clipboard
   - `Ctrl + Shift + V`: Paste system screenshot image directly onto canvas
   - `Ctrl + D`: Duplicate selected element
   - `Delete` / `Backspace`: Delete selected element
