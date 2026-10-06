@@ -205,3 +205,21 @@ export async function extractImageFromSystemClipboard(): Promise<string | null> 
 
   return null;
 }
+
+export function extractTextFromClipboard(clipboardData: DataTransfer | null): string | null {
+  if (!clipboardData) return null;
+  const text = clipboardData.getData('text/plain')?.trim();
+  return text || null;
+}
+
+export async function extractTextFromSystemClipboard(): Promise<string | null> {
+  if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
+    return null;
+  }
+  try {
+    const text = (await navigator.clipboard.readText()).trim();
+    return text || null;
+  } catch {
+    return null;
+  }
+}
