@@ -61,28 +61,29 @@ export function useKeyboardShortcuts({
   const lastPasteTimeRef = useRef<number>(0);
   const pasteHandledRef = useRef<boolean>(false);
   const lastShiftRef = useRef<boolean>(false);
-  const proxyRef = useRef<HTMLDivElement | null>(null);
+  const catcherRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
-    let proxy = document.getElementById('layoutcraft-paste-proxy') as HTMLDivElement | null;
-    if (!proxy) {
-      proxy = document.createElement('div');
-      proxy.id = 'layoutcraft-paste-proxy';
-      proxy.contentEditable = 'true';
-      proxy.tabIndex = -1;
-      proxy.setAttribute('aria-hidden', 'true');
-      proxy.style.cssText =
-        'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1;outline:none;';
-      document.body.appendChild(proxy);
+    let catcher = document.getElementById('layoutcraft-paste-catcher') as HTMLTextAreaElement | null;
+    if (!catcher) {
+      catcher = document.createElement('textarea');
+      catcher.id = 'layoutcraft-paste-catcher';
+      catcher.tabIndex = -1;
+      catcher.setAttribute('aria-hidden', 'true');
+      catcher.setAttribute('autocomplete', 'off');
+      catcher.style.cssText =
+        'position:fixed;left:0;top:0;width:1px;height:1px;padding:0;margin:0;border:none;outline:none;opacity:0.001;z-index:-9999;resize:none;overflow:hidden;background:transparent;';
+      document.body.appendChild(catcher);
     }
-    proxyRef.current = proxy;
+    catcherRef.current = catcher;
 
     const handlePasteAction = async (
       dataTransfer?: DataTransfer | null,
-      isShiftPressed: boolean = false
+      isShiftPressed: boolean = false,
+      catcherValue?: string
     ) => {
       const now = Date.now();
-      if (now - lastPasteTimeRef.current < 200) return;
+      if (now - lastPasteTimeRef.current < 150) return;
       lastPasteTimeRef.current = now;
 
       // 1. Try extracting image from provided event dataTransfer
@@ -107,22 +108,51 @@ export function useKeyboardShortcuts({
 
         // 3. Try extracting plain text from dataTransfer
         const plainText = extractTextFromClipboard(dataTransfer);
-        if (plainText && onPasteText) {
-          onPasteText(plainText);
+        if (plainText) {
+          if (plainText.startsWith('data:image/')) {
+            onPasteImage(plainText);
+            showToast('Screenshot pasted to canvas', 'success');
+            return;
+          }
+          if (onPasteText) {
+            onPasteText(plainText);
+            showToast('Text pasted to canvas', 'success');
+            return;
+          }
+        }
+      }
+
+      // 4. Try parsing fallback text from the textarea catcher
+      if (catcherValue && catcherValue.trim()) {
+        const trimmed = catcherValue.trim();
+        if (trimmed.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (parsed && typeof parsed === 'object' && parsed.id && parsed.tag && parsed.styles) {
+              onPasteNode(parsed, isShiftPressed);
+              showToast(
+                isShiftPressed ? 'Component pasted in-place' : 'Component pasted to canvas',
+                'success'
+              );
+              return;
+            }
+          } catch {
+            // Ignore parse error
+          }
+        }
+        if (trimmed.startsWith('data:image/')) {
+          onPasteImage(trimmed);
+          showToast('Screenshot pasted to canvas', 'success');
+          return;
+        }
+        if (onPasteText) {
+          onPasteText(trimmed);
           showToast('Text pasted to canvas', 'success');
           return;
         }
       }
 
-      // 4. Try async reading image from system navigator.clipboard FIRST before fallback node
-      const systemImg = await extractImageFromSystemClipboard();
-      if (systemImg) {
-        onPasteImage(systemImg);
-        showToast('Screenshot pasted to canvas', 'success');
-        return;
-      }
-
-      // 5. Fallback to in-memory copied node
+      // 5. In-memory copied node takes priority over slow or blocked system clipboard
       if (clipboardNode) {
         onPasteNode(clipboardNode, isShiftPressed);
         showToast(
@@ -132,8 +162,15 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // 6. Try async reading LayoutNode JSON from system navigator.clipboard
-      const systemNode = await extractNodeFromSystemClipboard();
+      // 6. Query system clipboard with bounded timeout (never hangs)
+      const systemImg = await extractImageFromSystemClipboard(150);
+      if (systemImg) {
+        onPasteImage(systemImg);
+        showToast('Screenshot pasted to canvas', 'success');
+        return;
+      }
+
+      const systemNode = await extractNodeFromSystemClipboard(150);
       if (systemNode) {
         onPasteNode(systemNode, isShiftPressed);
         showToast(
@@ -143,12 +180,13 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // 7. Try async reading plain text from system navigator.clipboard
-      const systemText = await extractTextFromSystemClipboard();
-      if (systemText && onPasteText) {
-        onPasteText(systemText);
-        showToast('Text pasted to canvas', 'success');
-        return;
+      const systemText = await extractTextFromSystemClipboard(150);
+      if (systemText) {
+        if (onPasteText) {
+          onPasteText(systemText);
+          showToast('Text pasted to canvas', 'success');
+          return;
+        }
       }
 
       showToast('Clipboard is empty or unsupported format', 'warning');
@@ -158,7 +196,7 @@ export function useKeyboardShortcuts({
       const target = e.target as HTMLElement | null;
       const isInput =
         target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement;
+        (target instanceof HTMLTextAreaElement && target !== catcherRef.current);
 
       if (isInput) {
         return;
@@ -168,43 +206,37 @@ export function useKeyboardShortcuts({
       const isSelected = Boolean(selectedId && selectedId !== rootNode.id);
       const isPasteKey = e.key === 'v' || e.key === 'V' || e.code === 'KeyV';
 
-      // Unified handling for Ctrl+V and Ctrl+Shift+V with proxy targeting
+      // Unified handling for Ctrl+V and Ctrl+Shift+V
       if (isCtrlOrMeta && isPasteKey) {
-        lastShiftRef.current = e.shiftKey;
-        pasteHandledRef.current = false;
-
-        // If inside an active contentEditable text span on the canvas (not our proxy)
-        if (target?.isContentEditable && target !== proxyRef.current) {
+        // If inside an active contentEditable text span on the canvas
+        if (target?.isContentEditable && target !== catcherRef.current) {
           return;
         }
 
-        // Focus invisible proxy synchronously so Chromium triggers native paste event on Ctrl+Shift+V
+        lastShiftRef.current = e.shiftKey;
+        pasteHandledRef.current = false;
         const previousActive = document.activeElement as HTMLElement | null;
-        if (proxyRef.current) {
-          proxyRef.current.focus();
+
+        // Focus and select catcher so browser native paste event lands on it
+        if (catcherRef.current) {
+          catcherRef.current.value = '';
+          catcherRef.current.focus({ preventScroll: true });
+          catcherRef.current.select();
         }
 
-        // Pre-fetch system clipboard within the synchronous user gesture tick as fallback
-        const systemClipboardPromise = extractImageFromSystemClipboard();
-
+        // Fallback timer: if browser does not emit native paste event within 35ms
         setTimeout(async () => {
           if (!pasteHandledRef.current) {
-            const systemImg = await systemClipboardPromise;
-            if (systemImg) {
-              pasteHandledRef.current = true;
-              onPasteImage(systemImg);
-              showToast('Screenshot pasted to canvas', 'success');
-              if (previousActive && typeof previousActive.focus === 'function') {
-                previousActive.focus();
-              }
-              return;
-            }
-            handlePasteAction(null, lastShiftRef.current);
-            if (previousActive && typeof previousActive.focus === 'function') {
-              previousActive.focus();
+            pasteHandledRef.current = true;
+            await handlePasteAction(null, lastShiftRef.current, catcherRef.current?.value);
+            if (previousActive && typeof previousActive.focus === 'function' && previousActive !== catcherRef.current) {
+              previousActive.focus({ preventScroll: true });
+            } else {
+              const artboard = document.querySelector<HTMLElement>('[tabindex="0"]');
+              artboard?.focus({ preventScroll: true });
             }
           }
-        }, 40);
+        }, 35);
         return;
       }
 
@@ -294,7 +326,7 @@ export function useKeyboardShortcuts({
       const target = e.target as HTMLElement | null;
       const isInput =
         target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement;
+        (target instanceof HTMLTextAreaElement && target !== catcherRef.current);
 
       const clipboardData = e.clipboardData;
       const hasImage = hasImageInClipboardData(clipboardData);
@@ -304,14 +336,15 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // In contentEditable text spans (inline text editing on canvas, not our proxy)
-      if (target?.isContentEditable && target !== proxyRef.current && !hasImage) {
+      // In contentEditable text spans (inline text editing on canvas, not our catcher)
+      if (target?.isContentEditable && target !== catcherRef.current && !hasImage) {
         const text = clipboardData?.getData('text/plain');
         if (text) {
           if (text.trim().startsWith('{')) {
             const parsed = extractNodeFromClipboard(clipboardData);
             if (parsed) {
               e.preventDefault();
+              e.stopPropagation();
               pasteHandledRef.current = true;
               onPasteNode(parsed, lastShiftRef.current);
               showToast('Component pasted to canvas', 'success');
@@ -320,6 +353,7 @@ export function useKeyboardShortcuts({
           }
           // Clean plain text paste into contentEditable span
           e.preventDefault();
+          e.stopPropagation();
           pasteHandledRef.current = true;
           document.execCommand('insertText', false, text);
           showToast('Plain text pasted', 'default');
@@ -329,14 +363,15 @@ export function useKeyboardShortcuts({
       }
 
       e.preventDefault();
+      e.stopPropagation();
       pasteHandledRef.current = true;
-      handlePasteAction(clipboardData, lastShiftRef.current);
+      handlePasteAction(clipboardData, lastShiftRef.current, catcherRef.current?.value);
 
-      // Refocus canvas artboard if focus was routed to capture proxy
-      if (document.activeElement === proxyRef.current) {
+      // Refocus canvas artboard if focus was routed to capture element
+      if (document.activeElement === catcherRef.current) {
         const artboard = document.querySelector<HTMLElement>('[tabindex="0"]');
         if (artboard && typeof artboard.focus === 'function') {
-          artboard.focus();
+          artboard.focus({ preventScroll: true });
         }
       }
     };
@@ -344,12 +379,14 @@ export function useKeyboardShortcuts({
     window.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('paste', handlePasteEvent, true);
     document.addEventListener('paste', handlePasteEvent, true);
+    catcher?.addEventListener('paste', handlePasteEvent, true);
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true);
       window.removeEventListener('paste', handlePasteEvent, true);
       document.removeEventListener('paste', handlePasteEvent, true);
-      if (proxy && proxy.parentNode) {
-        proxy.parentNode.removeChild(proxy);
+      catcher?.removeEventListener('paste', handlePasteEvent, true);
+      if (catcher && catcher.parentNode) {
+        catcher.parentNode.removeChild(catcher);
       }
     };
   }, [
