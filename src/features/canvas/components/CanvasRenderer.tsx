@@ -1,4 +1,4 @@
-import type { FC, MouseEvent, FocusEvent, JSX } from 'react';
+import { useState, useEffect, useRef, type FC, type MouseEvent, type FocusEvent, type JSX } from 'react';
 import type { LayoutNode } from '@/core/types/element.types';
 import { stylesToCssProperties } from '@/core/utils/style_converter';
 import { ElementBoundingBox } from './ElementBoundingBox';
@@ -32,14 +32,45 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
 }) => {
   if (node.isHidden) return null;
 
+  const [isEditing, setIsEditing] = useState(false);
+  const spanRef = useRef<HTMLSpanElement | null>(null);
+
   const isSelected = !isPreview && selectedId === node.id;
   const isHovered = !isPreview && hoveredId === node.id && !isSelected;
   const cssStyle = stylesToCssProperties(node.styles);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setIsEditing(false);
+    }
+  }, [isSelected]);
+
+  useEffect(() => {
+    if (isEditing && spanRef.current) {
+      spanRef.current.focus();
+      try {
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(spanRef.current);
+        range.collapse(false);
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      } catch {
+        // Fallback if range creation fails
+      }
+    }
+  }, [isEditing]);
 
   const handleClick = (e: MouseEvent) => {
     if (isPreview) return;
     e.stopPropagation();
     onSelect(node.id, e);
+  };
+
+  const handleDoubleClick = (e: MouseEvent) => {
+    if (isPreview || (node.children && node.children.length > 0)) return;
+    e.stopPropagation();
+    setIsEditing(true);
   };
 
   const handleMouseEnter = (e: MouseEvent) => {
@@ -56,7 +87,19 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
 
   const handleBlur = (e: FocusEvent<HTMLElement>) => {
     if (isPreview) return;
+    setIsEditing(false);
     onUpdateContent(node.id, e.currentTarget.innerText || '');
+  };
+
+  const handleSpanKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.blur();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsEditing(false);
+      e.currentTarget.blur();
+    }
   };
 
   const outlineClasses = isSelected
@@ -70,6 +113,7 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
     style: cssStyle,
     className: `${outlineClasses} transition-shadow`,
     onClick: handleClick,
+    onDoubleClick: handleDoubleClick,
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
     ...node.attributes,
@@ -117,7 +161,8 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
   }
 
   const Tag = (node.tag || 'div') as keyof JSX.IntrinsicElements;
-  const canEditInline = !isPreview && isSelected && node.children?.length === 0;
+  const isLeafText = !node.children || node.children.length === 0;
+  const canEditInline = !isPreview && isSelected && isEditing && isLeafText;
 
   return (
     <Tag {...commonProps}>
@@ -150,10 +195,13 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
         ))
       ) : (
         <span
+          ref={spanRef}
           contentEditable={canEditInline}
           suppressContentEditableWarning
           onBlur={handleBlur}
-          className={canEditInline ? 'outline-none cursor-text' : ''}
+          onKeyDown={handleSpanKeyDown}
+          onDoubleClick={handleDoubleClick}
+          className={canEditInline ? 'outline-none cursor-text' : isSelected ? 'cursor-pointer' : ''}
         >
           {node.content}
         </span>
