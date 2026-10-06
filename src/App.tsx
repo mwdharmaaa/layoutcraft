@@ -3,6 +3,8 @@ import { StudioSidebar } from '@/features/palette/components/StudioSidebar';
 import { CanvasArtboard } from '@/features/canvas/components/CanvasArtboard';
 import { PropertyInspector } from '@/features/inspector/components/PropertyInspector';
 import { ExportModal } from '@/features/export/components/ExportModal';
+import { ShortcutsModal } from '@/features/shortcuts/components/ShortcutsModal';
+import { ToastNotification } from '@/features/toast/components/ToastNotification';
 import { useStudioState } from '@/features/canvas/hooks/useStudioState';
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
     sidebarTab,
     inspectorTab,
     isExportOpen,
+    isShortcutsOpen,
+    toasts,
     canUndo,
     canRedo,
     setHoveredId,
@@ -28,6 +32,7 @@ export default function App() {
     setSidebarTab,
     setInspectorTab,
     setIsExportOpen,
+    setIsShortcutsOpen,
     handleUndo,
     handleRedo,
     handleSelectNode,
@@ -37,6 +42,7 @@ export default function App() {
     handleUpdateName,
     handleDeleteNode,
     handleDuplicateNode,
+    handlePasteImage,
     handleMoveOrder,
     handleToggleVisibility,
     handleSelectTemplate,
@@ -62,6 +68,7 @@ export default function App() {
         onTogglePreview={setIsPreview}
         onOpenExport={() => setIsExportOpen(true)}
         onClearCanvas={handleClearCanvas}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
       />
 
       {/* Main Workspace Workspace Dock */}
@@ -98,6 +105,7 @@ export default function App() {
           onMoveUp={(id) => handleMoveOrder(id, 'up')}
           onMoveDown={(id) => handleMoveOrder(id, 'down')}
           onCanvasClick={() => handleSelectNode(rootNode.id)}
+          onPasteImage={handlePasteImage}
         />
 
         {/* Right Dock: Property Inspector */}
@@ -120,6 +128,15 @@ export default function App() {
         rootNode={rootNode}
         onImportLayout={handleImportLayout}
       />
+
+      {/* Keyboard Shortcuts Cheat Sheet Modal */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      {/* Action and Shortcut Feedback Toasts */}
+      <ToastNotification toasts={toasts} />
     </div>
   );
 }

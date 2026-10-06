@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { LayoutNode, ElementStyles } from '@/core/types/element.types';
 import type { DeviceViewport, SidebarTab, InspectorTab } from '@/core/types/studio.types';
 import type { PaletteItem } from '@/features/palette/constants/palette_items';
@@ -15,6 +15,8 @@ import {
   cloneNodeWithNewIds,
 } from '@/core/utils/tree_operations';
 import { generateElementId } from '@/core/utils/id_generator';
+import { useToast } from '@/features/toast/hooks/useToast';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 
 export function useStudioState() {
   const [rootNode, setRootNode] = useState<LayoutNode>(DEFAULT_LAYOUT);
@@ -27,7 +29,9 @@ export function useStudioState() {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('components');
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>('layout');
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
   const [clipboardNode, setClipboardNode] = useState<LayoutNode | null>(null);
+  const { toasts, showToast } = useToast();
 
   // History stack for Undo / Redo
   const [history, setHistory] = useState<LayoutNode[]>([DEFAULT_LAYOUT]);
@@ -118,8 +122,25 @@ export function useStudioState() {
     const node = findNodeById(rootNode, id);
     if (node) {
       setClipboardNode(node);
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(JSON.stringify(node)).catch(() => {});
+      }
     }
   }, [rootNode]);
+
+  const handleCutNode = useCallback((id: string) => {
+    if (id === rootNode.id) return;
+    const node = findNodeById(rootNode, id);
+    if (node) {
+      setClipboardNode(node);
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(JSON.stringify(node)).catch(() => {});
+      }
+      const updated = removeNodeById(rootNode, id);
+      pushState(updated);
+      setSelectedId(null);
+    }
+  }, [rootNode, pushState]);
 
   const handlePasteNode = useCallback(() => {
     if (!clipboardNode) return;
@@ -209,78 +230,33 @@ export function useStudioState() {
     setSelectedId(null);
   }, [pushState]);
 
-  // Keyboard and paste shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        e.preventDefault();
-        handleUndo();
-      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
-        e.preventDefault();
-        handleRedo();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedId && selectedId !== rootNode.id) {
-        e.preventDefault();
-        handleCopyNode(selectedId);
-      } else if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedId) {
-        e.preventDefault();
-        handleDuplicateNode(selectedId);
-      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId && selectedId !== rootNode.id) {
-        e.preventDefault();
-        handleDeleteNode(selectedId);
-      }
-    };
-
-    const handleWindowPaste = (e: ClipboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-      const items = e.clipboardData?.items;
-      if (items) {
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          if (item.type.indexOf('image') !== -1) {
-            const file = item.getAsFile();
-            if (file) {
-              e.preventDefault();
-              const reader = new FileReader();
-              reader.onload = (loadEv) => {
-                const res = loadEv.target?.result;
-                if (typeof res === 'string') {
-                  handlePasteImage(res);
-                }
-              };
-              reader.readAsDataURL(file);
-              return;
-            }
-          }
-        }
-      }
-
-      if (clipboardNode) {
-        e.preventDefault();
-        handlePasteNode();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('paste', handleWindowPaste);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('paste', handleWindowPaste);
-    };
-  }, [
-    handleUndo,
-    handleRedo,
-    handleCopyNode,
-    handlePasteNode,
-    handlePasteImage,
-    handleDuplicateNode,
-    handleDeleteNode,
+  // Keyboard and paste shortcuts integration
+  useKeyboardShortcuts({
+    rootNode,
     selectedId,
-    rootNode.id,
     clipboardNode,
-  ]);
+    onUndo: handleUndo,
+    onRedo: handleRedo,
+    onCopy: handleCopyNode,
+    onCut: handleCutNode,
+    onPasteNode: handlePasteNode,
+    onPasteImage: handlePasteImage,
+    onDuplicate: handleDuplicateNode,
+    onDelete: handleDeleteNode,
+    onMoveOrder: handleMoveOrder,
+    onToggleVisibility: handleToggleVisibility,
+    onSetZoom: setZoom,
+    onToggleGrid: () => setShowGrid((p) => !p),
+    onTogglePreview: () => setIsPreview((p) => !p),
+    onOpenExport: () => setIsExportOpen(true),
+    onToggleShortcutsModal: () => setIsShortcutsOpen((p) => !p),
+    onDeselect: () => {
+      setSelectedId(null);
+      setIsShortcutsOpen(false);
+      setIsExportOpen(false);
+    },
+    showToast,
+  });
 
   const selectedNode = selectedId ? findNodeById(rootNode, selectedId) : null;
 
@@ -296,7 +272,9 @@ export function useStudioState() {
     sidebarTab,
     inspectorTab,
     isExportOpen,
+    isShortcutsOpen,
     clipboardNode,
+    toasts,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < history.length - 1,
     setHoveredId,
@@ -307,6 +285,7 @@ export function useStudioState() {
     setSidebarTab,
     setInspectorTab,
     setIsExportOpen,
+    setIsShortcutsOpen,
     handleUndo,
     handleRedo,
     handleSelectNode,
@@ -317,6 +296,7 @@ export function useStudioState() {
     handleDeleteNode,
     handleDuplicateNode,
     handleCopyNode,
+    handleCutNode,
     handlePasteNode,
     handlePasteImage,
     handleMoveOrder,
