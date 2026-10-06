@@ -1,4 +1,3 @@
-import type { FC } from 'react';
 import {
   Monitor,
   Laptop,
@@ -16,27 +15,8 @@ import {
   Layout,
   Keyboard,
 } from 'lucide-react';
-import type { DeviceViewport } from '@/core/types/studio.types';
 
-interface StudioHeaderProps {
-  viewport: DeviceViewport;
-  onViewportChange: (vp: DeviceViewport) => void;
-  zoom: number;
-  onZoomChange: (newZoom: number) => void;
-  showGrid: boolean;
-  onToggleGrid: () => void;
-  canUndo: boolean;
-  canRedo: boolean;
-  onUndo: () => void;
-  onRedo: () => void;
-  isPreview: boolean;
-  onTogglePreview: () => void;
-  onOpenExport: () => void;
-  onClearCanvas: () => void;
-  onOpenShortcuts?: () => void;
-}
-
-export const StudioHeader: FC<StudioHeaderProps> = ({
+export const StudioHeader = ({
   viewport,
   onViewportChange,
   zoom,
@@ -95,10 +75,10 @@ export const StudioHeader: FC<StudioHeaderProps> = ({
         {/* Device Switcher */}
         <div className="flex bg-zinc-950 p-1 rounded-lg border border-zinc-800">
           {[
-            { id: 'desktop' as DeviceViewport, icon: Monitor, label: 'Desktop' },
-            { id: 'laptop' as DeviceViewport, icon: Laptop, label: 'Laptop' },
-            { id: 'tablet' as DeviceViewport, icon: Tablet, label: 'Tablet' },
-            { id: 'mobile' as DeviceViewport, icon: Smartphone, label: 'Mobile' },
+            { id: 'desktop', icon: Monitor, label: 'Desktop' },
+            { id: 'laptop', icon: Laptop, label: 'Laptop' },
+            { id: 'tablet', icon: Tablet, label: 'Tablet' },
+            { id: 'mobile', icon: Smartphone, label: 'Mobile' },
           ].map((device) => {
             const Icon = device.icon;
             return (

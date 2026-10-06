@@ -1,4 +1,4 @@
-export function isImageUrl(text: string): boolean {
+export function isImageUrl(text) {
   if (!text) return false;
   const trimmed = text.trim();
   if (trimmed.startsWith('data:image/')) return true;
@@ -7,7 +7,7 @@ export function isImageUrl(text: string): boolean {
   return false;
 }
 
-export function hasImageInClipboardData(clipboardData: DataTransfer | null): boolean {
+export function hasImageInClipboardData(clipboardData) {
   if (!clipboardData) return false;
 
   const files = clipboardData.files;
@@ -47,17 +47,7 @@ export function hasImageInClipboardData(clipboardData: DataTransfer | null): boo
   return false;
 }
 
-export interface ExtractedImageInfo {
-  dataUrl: string;
-  isCopiedImage: boolean;
-  isScreenshot: boolean;
-  name?: string;
-  alt?: string;
-}
-
-export function extractImageDetailsFromClipboard(
-  clipboardData: DataTransfer | null
-): Promise<ExtractedImageInfo | null> {
+export function extractImageDetailsFromClipboard(clipboardData) {
   return new Promise((resolve) => {
     if (!clipboardData) {
       resolve(null);
@@ -70,8 +60,8 @@ export function extractImageDetailsFromClipboard(
     const types = Array.from(clipboardData.types || []);
     const hasHtmlType = types.includes('text/html');
 
-    let htmlImgSrc: string | null = null;
-    let htmlImgAlt: string | null = null;
+    let htmlImgSrc = null;
+    let htmlImgAlt = null;
 
     if (hasHtml) {
       try {
@@ -90,7 +80,7 @@ export function extractImageDetailsFromClipboard(
       }
     }
 
-    const readBlob = (blob: Blob): Promise<string | null> => {
+    const readBlob = (blob) => {
       return new Promise((res) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -187,16 +177,12 @@ export function extractImageDetailsFromClipboard(
   });
 }
 
-export async function extractImageFromClipboard(
-  clipboardData: DataTransfer | null
-): Promise<string | null> {
+export async function extractImageFromClipboard(clipboardData) {
   const details = await extractImageDetailsFromClipboard(clipboardData);
   return details?.dataUrl ?? null;
 }
 
-export function extractNodeFromClipboard(
-  clipboardData: DataTransfer | null
-): import('@/core/types/element.types').LayoutNode | null {
+export function extractNodeFromClipboard(clipboardData) {
   if (!clipboardData) return null;
   const text = clipboardData.getData('text/plain')?.trim();
   if (!text || !text.startsWith('{')) return null;
@@ -212,7 +198,7 @@ export function extractNodeFromClipboard(
   return null;
 }
 
-function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+function withTimeout(promise, ms, fallback) {
   return new Promise((resolve) => {
     let settled = false;
     const timer = setTimeout(() => {
@@ -239,9 +225,7 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
   });
 }
 
-export async function extractNodeFromSystemClipboard(
-  timeoutMs: number = 200
-): Promise<import('@/core/types/element.types').LayoutNode | null> {
+export async function extractNodeFromSystemClipboard(timeoutMs = 200) {
   if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
     return null;
   }
@@ -263,14 +247,12 @@ export async function extractNodeFromSystemClipboard(
   return withTimeout(queryAsync(), timeoutMs, null);
 }
 
-export async function extractImageDetailsFromSystemClipboard(
-  timeoutMs: number = 200
-): Promise<ExtractedImageInfo | null> {
+export async function extractImageDetailsFromSystemClipboard(timeoutMs = 200) {
   if (!navigator.clipboard) {
     return null;
   }
 
-  const queryAsync = async (): Promise<ExtractedImageInfo | null> => {
+  const queryAsync = async () => {
     if (typeof navigator.clipboard.read === 'function') {
       try {
         const items = await navigator.clipboard.read();
@@ -280,7 +262,7 @@ export async function extractImageDetailsFromSystemClipboard(
 
           if (imageType) {
             const blob = await item.getType(imageType);
-            const dataUrl = await new Promise<string | null>((resolve) => {
+            const dataUrl = await new Promise((resolve) => {
               const reader = new FileReader();
               reader.onload = (ev) => {
                 resolve(typeof ev.target?.result === 'string' ? ev.target.result : null);
@@ -290,7 +272,7 @@ export async function extractImageDetailsFromSystemClipboard(
             });
 
             if (dataUrl) {
-              let altText: string | null = null;
+              let altText = null;
               if (hasHtml) {
                 try {
                   const htmlBlob = await item.getType('text/html');
@@ -345,18 +327,18 @@ export async function extractImageDetailsFromSystemClipboard(
   return withTimeout(queryAsync(), timeoutMs, null);
 }
 
-export async function extractImageFromSystemClipboard(timeoutMs: number = 200): Promise<string | null> {
+export async function extractImageFromSystemClipboard(timeoutMs = 200) {
   const details = await extractImageDetailsFromSystemClipboard(timeoutMs);
   return details?.dataUrl ?? null;
 }
 
-export function extractTextFromClipboard(clipboardData: DataTransfer | null): string | null {
+export function extractTextFromClipboard(clipboardData) {
   if (!clipboardData) return null;
   const text = clipboardData.getData('text/plain')?.trim();
   return text || null;
 }
 
-export async function extractTextFromSystemClipboard(timeoutMs: number = 200): Promise<string | null> {
+export async function extractTextFromSystemClipboard(timeoutMs = 200) {
   if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
     return null;
   }

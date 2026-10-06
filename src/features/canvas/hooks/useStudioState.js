@@ -1,8 +1,4 @@
 import { useState, useCallback } from 'react';
-import type { LayoutNode, ElementStyles } from '@/core/types/element.types';
-import type { DeviceViewport, SidebarTab, InspectorTab } from '@/core/types/studio.types';
-import type { PaletteItem } from '@/features/palette/constants/palette_items';
-import type { TemplateDefinition } from '@/features/templates/constants/templates_data';
 import { DEFAULT_LAYOUT } from '@/core/constants/default_layout';
 import {
   findNodeById,
@@ -19,25 +15,25 @@ import { useToast } from '@/features/toast/hooks/useToast';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 
 export function useStudioState() {
-  const [rootNode, setRootNode] = useState<LayoutNode>(DEFAULT_LAYOUT);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [viewport, setViewport] = useState<DeviceViewport>('desktop');
-  const [zoom, setZoom] = useState<number>(100);
-  const [showGrid, setShowGrid] = useState<boolean>(true);
-  const [isPreview, setIsPreview] = useState<boolean>(false);
-  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('components');
-  const [inspectorTab, setInspectorTab] = useState<InspectorTab>('layout');
-  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
-  const [clipboardNode, setClipboardNode] = useState<LayoutNode | null>(null);
+  const [rootNode, setRootNode] = useState(DEFAULT_LAYOUT);
+  const [selectedId, setSelectedId] = useState(null);
+  const [hoveredId, setHoveredId] = useState(null);
+  const [viewport, setViewport] = useState('desktop');
+  const [zoom, setZoom] = useState(100);
+  const [showGrid, setShowGrid] = useState(true);
+  const [isPreview, setIsPreview] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState('components');
+  const [inspectorTab, setInspectorTab] = useState('layout');
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [clipboardNode, setClipboardNode] = useState(null);
   const { toasts, showToast } = useToast();
 
   // History stack for Undo / Redo
-  const [history, setHistory] = useState<LayoutNode[]>([DEFAULT_LAYOUT]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [history, setHistory] = useState([DEFAULT_LAYOUT]);
+  const [historyIndex, setHistoryIndex] = useState(0);
 
-  const pushState = useCallback((newRoot: LayoutNode) => {
+  const pushState = useCallback((newRoot) => {
     setHistory((prev) => {
       const sliced = prev.slice(0, historyIndex + 1);
       return [...sliced, newRoot];
@@ -62,11 +58,11 @@ export function useStudioState() {
     }
   }, [historyIndex, history]);
 
-  const handleSelectNode = useCallback((id: string) => {
+  const handleSelectNode = useCallback((id) => {
     setSelectedId(id);
   }, []);
 
-  const handleInsertNode = useCallback((item: PaletteItem) => {
+  const handleInsertNode = useCallback((item) => {
     const newNode = item.createNode();
     const targetParentId = selectedId || rootNode.id;
     const targetParent = findNodeById(rootNode, targetParentId);
@@ -79,7 +75,7 @@ export function useStudioState() {
     setSelectedId(newNode.id);
   }, [selectedId, rootNode, pushState]);
 
-  const handleUpdateStyles = useCallback((patch: Partial<ElementStyles>) => {
+  const handleUpdateStyles = useCallback((patch) => {
     if (!selectedId) return;
     const updated = updateNodeById(rootNode, selectedId, (node) => ({
       ...node,
@@ -88,7 +84,7 @@ export function useStudioState() {
     pushState(updated);
   }, [selectedId, rootNode, pushState]);
 
-  const handleUpdateContent = useCallback((id: string, text: string) => {
+  const handleUpdateContent = useCallback((id, text) => {
     const updated = updateNodeById(rootNode, id, (node) => ({
       ...node,
       content: text,
@@ -96,7 +92,7 @@ export function useStudioState() {
     pushState(updated);
   }, [rootNode, pushState]);
 
-  const handleUpdateName = useCallback((name: string) => {
+  const handleUpdateName = useCallback((name) => {
     if (!selectedId) return;
     const updated = updateNodeById(rootNode, selectedId, (node) => ({
       ...node,
@@ -105,19 +101,19 @@ export function useStudioState() {
     pushState(updated);
   }, [selectedId, rootNode, pushState]);
 
-  const handleDeleteNode = useCallback((id: string) => {
+  const handleDeleteNode = useCallback((id) => {
     if (id === rootNode.id) return;
     const updated = removeNodeById(rootNode, id);
     pushState(updated);
     if (selectedId === id) setSelectedId(null);
   }, [rootNode, selectedId, pushState]);
 
-  const handleDuplicateNode = useCallback((id: string) => {
+  const handleDuplicateNode = useCallback((id) => {
     const updated = duplicateNodeById(rootNode, id);
     pushState(updated);
   }, [rootNode, pushState]);
 
-  const handleCopyNode = useCallback((id: string) => {
+  const handleCopyNode = useCallback((id) => {
     if (id === rootNode.id) return;
     const node = findNodeById(rootNode, id);
     if (node) {
@@ -128,7 +124,7 @@ export function useStudioState() {
     }
   }, [rootNode]);
 
-  const handleCutNode = useCallback((id: string) => {
+  const handleCutNode = useCallback((id) => {
     if (id === rootNode.id) return;
     const node = findNodeById(rootNode, id);
     if (node) {
@@ -143,7 +139,7 @@ export function useStudioState() {
   }, [rootNode, pushState]);
 
   const handlePasteNode = useCallback(
-    (nodeToPaste?: LayoutNode, inPlace?: boolean) => {
+    (nodeToPaste, inPlace) => {
       const sourceNode = nodeToPaste || clipboardNode;
       if (!sourceNode) return;
       if (nodeToPaste && nodeToPaste !== clipboardNode) {
@@ -153,8 +149,8 @@ export function useStudioState() {
       const targetParentId = selectedId || rootNode.id;
       const targetParent = findNodeById(rootNode, targetParentId);
       const isContainer = targetParent?.children !== undefined;
-      let parentIdToUse: string;
-      let insertIndex: number | undefined;
+      let parentIdToUse;
+      let insertIndex;
 
       if (inPlace && selectedId && selectedId !== rootNode.id) {
         const parent = findParentNode(rootNode, selectedId);
@@ -183,7 +179,7 @@ export function useStudioState() {
   );
 
   const handlePasteText = useCallback(
-    (text: string) => {
+    (text) => {
       const trimmed = text.trim();
       if (!trimmed) return;
 
@@ -202,7 +198,7 @@ export function useStudioState() {
         return;
       }
 
-      const textNode: LayoutNode = {
+      const textNode = {
         id: generateElementId('p'),
         name: 'Text Block',
         tag: 'p',
@@ -220,8 +216,8 @@ export function useStudioState() {
       const targetParentId = selectedId || rootNode.id;
       const targetParent = findNodeById(rootNode, targetParentId);
       const isContainer = targetParent?.children !== undefined;
-      let parentIdToUse: string;
-      let insertIndex: number | undefined;
+      let parentIdToUse;
+      let insertIndex;
 
       if (isContainer) {
         parentIdToUse = targetParentId;
@@ -248,12 +244,9 @@ export function useStudioState() {
   );
 
   const handlePasteImage = useCallback(
-    (
-      dataUrl: string,
-      options?: { name?: string; alt?: string; isScreenshot?: boolean }
-    ) => {
+    (dataUrl, options) => {
       const isScreenshot = options?.isScreenshot ?? false;
-      const imgNode: LayoutNode = {
+      const imgNode = {
         id: generateElementId('img'),
         name: options?.name ?? (isScreenshot ? 'Screenshot Image' : 'Image'),
         tag: 'img',
@@ -273,35 +266,37 @@ export function useStudioState() {
         },
       };
 
-    const targetParentId = selectedId || rootNode.id;
-    const targetParent = findNodeById(rootNode, targetParentId);
-    const isContainer = targetParent?.children !== undefined;
-    let parentIdToUse: string;
-    let insertIndex: number | undefined;
+      const targetParentId = selectedId || rootNode.id;
+      const targetParent = findNodeById(rootNode, targetParentId);
+      const isContainer = targetParent?.children !== undefined;
+      let parentIdToUse;
+      let insertIndex;
 
-    if (isContainer) {
-      parentIdToUse = targetParentId;
-      insertIndex = targetParent.children?.length;
-    } else {
-      const parent = findParentNode(rootNode, targetParentId);
-      parentIdToUse = parent?.id || rootNode.id;
-      if (parent?.children) {
-        const siblingIndex = parent.children.findIndex((c) => c.id === targetParentId);
-        insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+      if (isContainer) {
+        parentIdToUse = targetParentId;
+        insertIndex = targetParent.children?.length;
+      } else {
+        const parent = findParentNode(rootNode, targetParentId);
+        parentIdToUse = parent?.id || rootNode.id;
+        if (parent?.children) {
+          const siblingIndex = parent.children.findIndex((c) => c.id === targetParentId);
+          insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+        }
       }
-    }
 
-    const updated = insertChildNode(rootNode, parentIdToUse, imgNode, insertIndex);
-    pushState(updated);
-    setSelectedId(imgNode.id);
+      const updated = insertChildNode(rootNode, parentIdToUse, imgNode, insertIndex);
+      pushState(updated);
+      setSelectedId(imgNode.id);
 
-    setTimeout(() => {
-      const el = document.getElementById(`canvas-${imgNode.id}`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 60);
-  }, [selectedId, rootNode, pushState]);
+      setTimeout(() => {
+        const el = document.getElementById(`canvas-${imgNode.id}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 60);
+    },
+    [selectedId, rootNode, pushState]
+  );
 
-  const handleMoveOrder = useCallback((id: string, direction: 'up' | 'down') => {
+  const handleMoveOrder = useCallback((id, direction) => {
     const parent = findParentNode(rootNode, id);
     if (!parent || !parent.children) return;
     const idx = parent.children.findIndex((c) => c.id === id);
@@ -312,7 +307,7 @@ export function useStudioState() {
     pushState(updated);
   }, [rootNode, pushState]);
 
-  const handleToggleVisibility = useCallback((id: string) => {
+  const handleToggleVisibility = useCallback((id) => {
     const updated = updateNodeById(rootNode, id, (node) => ({
       ...node,
       isHidden: !node.isHidden,
@@ -320,18 +315,18 @@ export function useStudioState() {
     pushState(updated);
   }, [rootNode, pushState]);
 
-  const handleSelectTemplate = useCallback((template: TemplateDefinition) => {
+  const handleSelectTemplate = useCallback((template) => {
     pushState(template.root);
     setSelectedId(null);
   }, [pushState]);
 
-  const handleImportLayout = useCallback((imported: LayoutNode) => {
+  const handleImportLayout = useCallback((imported) => {
     pushState(imported);
     setSelectedId(null);
   }, [pushState]);
 
   const handleClearCanvas = useCallback(() => {
-    const emptyCanvas: LayoutNode = {
+    const emptyCanvas = {
       ...DEFAULT_LAYOUT,
       id: 'root-canvas',
       name: 'Canvas Page',

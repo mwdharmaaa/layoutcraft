@@ -1,6 +1,4 @@
 import { useEffect, useRef } from 'react';
-import type { LayoutNode } from '@/core/types/element.types';
-import type { ToastMessage } from '@/core/types/shortcut.types';
 import { findNodeById } from '@/core/utils/tree_operations';
 import {
   extractImageDetailsFromClipboard,
@@ -11,35 +9,7 @@ import {
   extractTextFromSystemClipboard,
   hasImageInClipboardData,
   isImageUrl,
-  type ExtractedImageInfo,
 } from '../utils/clipboard_helpers';
-
-interface UseKeyboardShortcutsParams {
-  rootNode: LayoutNode;
-  selectedId: string | null;
-  clipboardNode: LayoutNode | null;
-  onUndo: () => void;
-  onRedo: () => void;
-  onCopy: (id: string) => void;
-  onCut: (id: string) => void;
-  onPasteNode: (node?: LayoutNode, inPlace?: boolean) => void;
-  onPasteImage: (
-    dataUrl: string,
-    options?: { name?: string; alt?: string; isScreenshot?: boolean }
-  ) => void;
-  onPasteText?: (text: string) => void;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
-  onMoveOrder: (id: string, dir: 'up' | 'down') => void;
-  onToggleVisibility: (id: string) => void;
-  onSetZoom: (updater: (prev: number) => number) => void;
-  onToggleGrid: () => void;
-  onTogglePreview: () => void;
-  onOpenExport: () => void;
-  onToggleShortcutsModal: () => void;
-  onDeselect: () => void;
-  showToast: (msg: string, type?: ToastMessage['type']) => void;
-}
 
 export function useKeyboardShortcuts({
   rootNode,
@@ -63,14 +33,14 @@ export function useKeyboardShortcuts({
   onToggleShortcutsModal,
   onDeselect,
   showToast,
-}: UseKeyboardShortcutsParams) {
-  const lastPasteTimeRef = useRef<number>(0);
-  const pasteHandledRef = useRef<boolean>(false);
-  const lastShiftRef = useRef<boolean>(false);
-  const catcherRef = useRef<HTMLTextAreaElement | null>(null);
+}) {
+  const lastPasteTimeRef = useRef(0);
+  const pasteHandledRef = useRef(false);
+  const lastShiftRef = useRef(false);
+  const catcherRef = useRef(null);
 
   useEffect(() => {
-    let catcher = document.getElementById('layoutcraft-paste-catcher') as HTMLTextAreaElement | null;
+    let catcher = document.getElementById('layoutcraft-paste-catcher');
     if (!catcher) {
       catcher = document.createElement('textarea');
       catcher.id = 'layoutcraft-paste-catcher';
@@ -84,16 +54,16 @@ export function useKeyboardShortcuts({
     catcherRef.current = catcher;
 
     const handlePasteAction = async (
-      dataTransfer?: DataTransfer | null,
-      isShiftPressed: boolean = false,
-      catcherValue?: string
+      dataTransfer,
+      isShiftPressed = false,
+      catcherValue
     ) => {
       const now = Date.now();
       if (now - lastPasteTimeRef.current < 150) return;
       lastPasteTimeRef.current = now;
 
       // ─────────────────────────────────────────────────────────────
-      // BRANCH A: Ctrl + Shift + V -> Dedicated Screenshot Pasting ("paste gambar hasil ssan")
+      // BRANCH A: Ctrl + Shift + V -> Dedicated Screenshot Pasting
       // ─────────────────────────────────────────────────────────────
       if (isShiftPressed) {
         // 1. Try extracting from provided event dataTransfer
@@ -138,9 +108,9 @@ export function useKeyboardShortcuts({
       }
 
       // ─────────────────────────────────────────────────────────────
-      // BRANCH B: Ctrl + V -> Copy & Paste Element / Copied Image ("coppy n paste gambar / elemen")
+      // BRANCH B: Ctrl + V -> Copy & Paste Element / Copied Image
       // ─────────────────────────────────────────────────────────────
-      const notifyNodePasted = (node: LayoutNode) => {
+      const notifyNodePasted = (node) => {
         const isImage = node.tag === 'img';
         showToast(isImage ? 'Image pasted to canvas' : 'Component pasted to canvas', 'success');
       };
@@ -188,7 +158,7 @@ export function useKeyboardShortcuts({
       }
 
       // 5. Extract image details from dataTransfer or system clipboard
-      let imageDetails: ExtractedImageInfo | null = null;
+      let imageDetails = null;
       if (dataTransfer) {
         imageDetails = await extractImageDetailsFromClipboard(dataTransfer);
       }
@@ -208,7 +178,7 @@ export function useKeyboardShortcuts({
         imageDetails = await extractImageDetailsFromSystemClipboard(150);
       }
 
-      // 6. If user copied an image (web / Pinterest / file / URL / data URI), paste it!
+      // 6. If user copied an image, paste it
       if (imageDetails && imageDetails.isCopiedImage) {
         onPasteImage(imageDetails.dataUrl, {
           name: imageDetails.name || 'Image',
@@ -220,7 +190,7 @@ export function useKeyboardShortcuts({
       }
 
       // 7. Try plain text insertion
-      let textToPaste: string | null = null;
+      let textToPaste = null;
       if (dataTransfer) {
         textToPaste = extractTextFromClipboard(dataTransfer);
       }
@@ -239,8 +209,7 @@ export function useKeyboardShortcuts({
         }
       }
 
-      // 8. If clipboard holds a SCREENSHOT (not a copied image)
-      // Per specification: Ctrl+V pastes copied images; screenshots require Ctrl+Shift+V
+      // 8. If clipboard holds a SCREENSHOT
       if (imageDetails && imageDetails.isScreenshot) {
         showToast('Screenshot detected. Press Ctrl+Shift+V to paste screenshot', 'info');
         return;
@@ -249,8 +218,8 @@ export function useKeyboardShortcuts({
       showToast('Clipboard is empty. Copy an image or element first (Ctrl+C)', 'warning');
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
+    const handleKeyDown = (e) => {
+      const target = e.target;
       const isInput =
         target instanceof HTMLInputElement ||
         (target instanceof HTMLTextAreaElement && target !== catcherRef.current);
@@ -272,7 +241,7 @@ export function useKeyboardShortcuts({
 
         lastShiftRef.current = e.shiftKey;
         pasteHandledRef.current = false;
-        const previousActive = document.activeElement as HTMLElement | null;
+        const previousActive = document.activeElement;
 
         // Focus and select catcher so browser native paste event lands on it
         if (catcherRef.current) {
@@ -289,7 +258,7 @@ export function useKeyboardShortcuts({
             if (previousActive && typeof previousActive.focus === 'function' && previousActive !== catcherRef.current) {
               previousActive.focus({ preventScroll: true });
             } else {
-              const artboard = document.querySelector<HTMLElement>('[tabindex="0"]');
+              const artboard = document.querySelector('[tabindex="0"]');
               artboard?.focus({ preventScroll: true });
             }
           }
@@ -312,15 +281,15 @@ export function useKeyboardShortcuts({
 
       if (isCtrlOrMeta && (e.key === 'c' || e.key === 'C') && isSelected) {
         e.preventDefault();
-        onCopy(selectedId!);
+        onCopy(selectedId);
         showToast(isImageSelected ? 'Image copied to clipboard' : 'Element copied to clipboard', 'default');
       } else if (isCtrlOrMeta && (e.key === 'x' || e.key === 'X') && isSelected) {
         e.preventDefault();
-        onCut(selectedId!);
+        onCut(selectedId);
         showToast(isImageSelected ? 'Image cut to clipboard' : 'Element cut to clipboard', 'default');
       } else if (isCtrlOrMeta && (e.key === 'd' || e.key === 'D') && isSelected) {
         e.preventDefault();
-        onDuplicate(selectedId!);
+        onDuplicate(selectedId);
         showToast(isImageSelected ? 'Image duplicated' : 'Element duplicated', 'default');
       } else if (isCtrlOrMeta && (e.key === 'z' || e.key === 'Z')) {
         e.preventDefault();
@@ -337,19 +306,19 @@ export function useKeyboardShortcuts({
         showToast('Redo', 'info');
       } else if ((e.key === 'Delete' || e.key === 'Backspace') && isSelected) {
         e.preventDefault();
-        onDelete(selectedId!);
+        onDelete(selectedId);
         showToast('Element deleted', 'warning');
       } else if (e.altKey && e.key === 'ArrowUp' && isSelected) {
         e.preventDefault();
-        onMoveOrder(selectedId!, 'up');
+        onMoveOrder(selectedId, 'up');
         showToast('Reordered element up', 'default');
       } else if (e.altKey && e.key === 'ArrowDown' && isSelected) {
         e.preventDefault();
-        onMoveOrder(selectedId!, 'down');
+        onMoveOrder(selectedId, 'down');
         showToast('Reordered element down', 'default');
       } else if (isCtrlOrMeta && (e.key === 'h' || e.key === 'H') && isSelected) {
         e.preventDefault();
-        onToggleVisibility(selectedId!);
+        onToggleVisibility(selectedId);
         showToast('Toggled element visibility', 'default');
       } else if (isCtrlOrMeta && (e.key === '=' || e.key === '+')) {
         e.preventDefault();
@@ -382,8 +351,8 @@ export function useKeyboardShortcuts({
       }
     };
 
-    const handlePasteEvent = (e: ClipboardEvent) => {
-      const target = e.target as HTMLElement | null;
+    const handlePasteEvent = (e) => {
+      const target = e.target;
       const isInput =
         target instanceof HTMLInputElement ||
         (target instanceof HTMLTextAreaElement && target !== catcherRef.current);
@@ -396,7 +365,7 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // In contentEditable text spans (inline text editing on canvas, not our catcher)
+      // In contentEditable text spans
       if (target?.isContentEditable && target !== catcherRef.current && !hasImage) {
         const text = clipboardData?.getData('text/plain');
         if (text) {
@@ -430,7 +399,7 @@ export function useKeyboardShortcuts({
 
       // Refocus canvas artboard if focus was routed to capture element
       if (document.activeElement === catcherRef.current) {
-        const artboard = document.querySelector<HTMLElement>('[tabindex="0"]');
+        const artboard = document.querySelector('[tabindex="0"]');
         if (artboard && typeof artboard.focus === 'function') {
           artboard.focus({ preventScroll: true });
         }

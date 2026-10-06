@@ -1,32 +1,8 @@
-import { useRef, type FC, type MouseEvent } from 'react';
-import type { LayoutNode } from '@/core/types/element.types';
-import type { DeviceViewport } from '@/core/types/studio.types';
+import { useRef } from 'react';
 import { VIEWPORT_CONFIGS } from '@/core/constants/presets';
 import { CanvasRenderer } from './CanvasRenderer';
 
-interface CanvasArtboardProps {
-  rootNode: LayoutNode;
-  selectedId: string | null;
-  hoveredId: string | null;
-  viewport: DeviceViewport;
-  zoom: number;
-  showGrid: boolean;
-  isPreview: boolean;
-  onSelect: (id: string, e: MouseEvent) => void;
-  onHover: (id: string | null, e: MouseEvent) => void;
-  onUpdateContent: (id: string, text: string) => void;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
-  onMoveUp?: (id: string) => void;
-  onMoveDown?: (id: string) => void;
-  onCanvasClick: () => void;
-  onPasteImage?: (
-    dataUrl: string,
-    options?: { name?: string; alt?: string; isScreenshot?: boolean }
-  ) => void;
-}
-
-export const CanvasArtboard: FC<CanvasArtboardProps> = ({
+export const CanvasArtboard = ({
   rootNode,
   selectedId,
   hoveredId,
@@ -44,15 +20,15 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
   onCanvasClick,
   onPasteImage,
 }) => {
-  const artboardRef = useRef<HTMLDivElement>(null);
+  const artboardRef = useRef(null);
   const vpConfig = VIEWPORT_CONFIGS.find((v) => v.id === viewport) || VIEWPORT_CONFIGS[0];
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {

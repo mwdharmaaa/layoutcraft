@@ -1,16 +1,6 @@
-import type { FC } from 'react';
 import { Copy, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
-import type { LayoutNode } from '@/core/types/element.types';
 
-interface ElementBoundingBoxProps {
-  node: LayoutNode;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
-  onMoveUp?: (id: string) => void;
-  onMoveDown?: (id: string) => void;
-}
-
-export const ElementBoundingBox: FC<ElementBoundingBoxProps> = ({
+export const ElementBoundingBox = ({
   node,
   onDuplicate,
   onDelete,
