@@ -1,7 +1,6 @@
-import type { LayoutNode } from '@/core/types/element.types';
-import { stylesToCssString } from '@/core/utils/style_converter';
+﻿import { stylesToCssString } from '@/core/utils/style_converter';
 
-function renderHtmlNode(node: LayoutNode, indent = '  '): string {
+function renderHtmlNode(node, indent = '  ') {
   const inlineCss = stylesToCssString(node.styles);
   const styleAttr = inlineCss ? ` style="${inlineCss}"` : '';
   const attrEntries = Object.entries(node.attributes || {});
@@ -29,7 +28,7 @@ function renderHtmlNode(node: LayoutNode, indent = '  '): string {
   return `${indent}<${tag}${styleAttr}${extraAttrs}>\n${childrenHtml}${indent}</${tag}>\n`;
 }
 
-export function generateStandardHtml(root: LayoutNode): string {
+export function generateStandardHtml(root) {
   const bodyContent = renderHtmlNode(root, '    ');
   return `<!DOCTYPE html>
 <html lang="en">
@@ -48,7 +47,7 @@ ${bodyContent}
 </html>`;
 }
 
-export function generateReactJsx(node: LayoutNode, indent = '    '): string {
+export function generateReactJsx(node, indent = '    ') {
   const styleObj = JSON.stringify(node.styles);
   const tag = node.tag || 'div';
   const isVoid = ['input', 'img', 'hr', 'br'].includes(tag);
@@ -74,7 +73,7 @@ export function generateReactJsx(node: LayoutNode, indent = '    '): string {
   return `${indent}<${tag} style={${styleObj}}>\n${childrenCode}${indent}</${tag}>\n`;
 }
 
-export function generateReactComponent(root: LayoutNode): string {
+export function generateReactComponent(root) {
   const jsxTree = generateReactJsx(root, '    ');
   return `import React from 'react';
 
@@ -85,6 +84,6 @@ ${jsxTree}  );
 `;
 }
 
-export function generateProjectJson(root: LayoutNode): string {
+export function generateProjectJson(root) {
   return JSON.stringify(root, null, 2);
 }

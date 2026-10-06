@@ -1,13 +1,6 @@
-import type { FC } from 'react';
-import type { ElementStyles } from '@/core/types/element.types';
-import { COLOR_PALETTES } from '@/core/constants/presets';
+﻿import { COLOR_PALETTES } from '@/core/constants/presets';
 
-interface TypographySectionProps {
-  styles: ElementStyles;
-  onChange: (patch: Partial<ElementStyles>) => void;
-}
-
-export const TypographySection: FC<TypographySectionProps> = ({ styles, onChange }) => {
+export const TypographySection = ({ styles = {}, onChange }) => {
   return (
     <div className="space-y-4 text-xs text-zinc-300">
       {/* Font Size & Weight */}
@@ -43,7 +36,7 @@ export const TypographySection: FC<TypographySectionProps> = ({ styles, onChange
       <div>
         <label className="block text-[11px] font-medium text-zinc-400 mb-1">Alignment</label>
         <div className="grid grid-cols-4 gap-1 bg-zinc-950 p-1 rounded-md border border-zinc-800">
-          {(['left', 'center', 'right', 'justify'] as const).map((align) => (
+          {['left', 'center', 'right', 'justify'].map((align) => (
             <button
               key={align}
               onClick={() => onChange({ textAlign: align })}

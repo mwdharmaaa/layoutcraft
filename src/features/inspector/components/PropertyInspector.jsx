@@ -1,22 +1,10 @@
-import type { FC } from 'react';
 import { Sliders, Maximize2, Type, Palette } from 'lucide-react';
-import type { LayoutNode, ElementStyles } from '@/core/types/element.types';
-import type { InspectorTab } from '@/core/types/studio.types';
 import { LayoutSection } from './LayoutSection';
 import { SpacingSection } from './SpacingSection';
 import { TypographySection } from './TypographySection';
 import { AppearanceSection } from './AppearanceSection';
 
-interface PropertyInspectorProps {
-  selectedNode: LayoutNode | null;
-  activeTab: InspectorTab;
-  onTabChange: (tab: InspectorTab) => void;
-  onUpdateStyles: (styles: Partial<ElementStyles>) => void;
-  onUpdateContent: (content: string) => void;
-  onUpdateName: (name: string) => void;
-}
-
-export const PropertyInspector: FC<PropertyInspectorProps> = ({
+export const PropertyInspector = ({
   selectedNode,
   activeTab,
   onTabChange,
@@ -36,7 +24,7 @@ export const PropertyInspector: FC<PropertyInspectorProps> = ({
     );
   }
 
-  const tabs: { id: InspectorTab; label: string; icon: FC<{ className?: string }> }[] = [
+  const tabs = [
     { id: 'layout', label: 'Layout', icon: Sliders },
     { id: 'spacing', label: 'Box', icon: Maximize2 },
     { id: 'typography', label: 'Type', icon: Type },

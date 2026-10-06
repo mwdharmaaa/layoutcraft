@@ -1,12 +1,4 @@
-import type { FC } from 'react';
-import type { ElementStyles } from '@/core/types/element.types';
-
-interface SpacingSectionProps {
-  styles: ElementStyles;
-  onChange: (patch: Partial<ElementStyles>) => void;
-}
-
-export const SpacingSection: FC<SpacingSectionProps> = ({ styles, onChange }) => {
+﻿export const SpacingSection = ({ styles = {}, onChange }) => {
   return (
     <div className="space-y-4 text-xs text-zinc-300">
       {/* Sizing: Width & Height */}

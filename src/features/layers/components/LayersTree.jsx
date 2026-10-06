@@ -1,17 +1,7 @@
-import { useState, type FC } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, Trash2, ChevronRight, ChevronDown, Layers } from 'lucide-react';
-import type { LayoutNode } from '@/core/types/element.types';
 
-interface LayersTreeProps {
-  node: LayoutNode;
-  selectedId: string | null;
-  depth?: number;
-  onSelect: (id: string) => void;
-  onToggleVisibility: (id: string) => void;
-  onDelete: (id: string) => void;
-}
-
-export const LayersTreeItem: FC<LayersTreeProps> = ({
+export const LayersTreeItem = ({
   node,
   selectedId,
   depth = 0,
@@ -82,7 +72,7 @@ export const LayersTreeItem: FC<LayersTreeProps> = ({
 
       {hasChildren && isExpanded && (
         <div>
-          {node.children!.map((child) => (
+          {node.children.map((child) => (
             <LayersTreeItem
               key={child.id}
               node={child}
@@ -99,7 +89,7 @@ export const LayersTreeItem: FC<LayersTreeProps> = ({
   );
 };
 
-export const LayersTree: FC<LayersTreeProps> = (props) => {
+export const LayersTree = (props) => {
   return (
     <div className="flex flex-col h-full overflow-hidden select-none">
       <div className="p-3 border-b border-zinc-800 flex items-center gap-2">

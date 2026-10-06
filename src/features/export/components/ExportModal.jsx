@@ -1,28 +1,18 @@
-import { useState, type FC, type ChangeEvent } from 'react';
+import { useState } from 'react';
 import { X, Copy, Check, Download, Upload, Code2 } from 'lucide-react';
-import type { LayoutNode } from '@/core/types/element.types';
 import {
   generateStandardHtml,
   generateReactComponent,
   generateProjectJson,
 } from '../utils/code_generator';
 
-interface ExportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  rootNode: LayoutNode;
-  onImportLayout: (importedRoot: LayoutNode) => void;
-}
-
-type ExportTab = 'html' | 'react' | 'json';
-
-export const ExportModal: FC<ExportModalProps> = ({
+export const ExportModal = ({
   isOpen,
   onClose,
   rootNode,
   onImportLayout,
 }) => {
-  const [activeTab, setActiveTab] = useState<ExportTab>('html');
+  const [activeTab, setActiveTab] = useState('html');
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -32,6 +22,7 @@ export const ExportModal: FC<ExportModalProps> = ({
       case 'html': return generateStandardHtml(rootNode);
       case 'react': return generateReactComponent(rootNode);
       case 'json': return generateProjectJson(rootNode);
+      default: return '';
     }
   };
 
@@ -42,7 +33,7 @@ export const ExportModal: FC<ExportModalProps> = ({
   };
 
   const handleDownload = () => {
-    const ext = activeTab === 'html' ? 'html' : activeTab === 'react' ? 'tsx' : 'json';
+    const ext = activeTab === 'html' ? 'html' : activeTab === 'react' ? 'jsx' : 'json';
     const blob = new Blob([getCode()], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -52,13 +43,13 @@ export const ExportModal: FC<ExportModalProps> = ({
     URL.revokeObjectURL(url);
   };
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const parsed = JSON.parse(event.target?.result as string);
+        const parsed = JSON.parse(event.target?.result);
         if (parsed && parsed.id && parsed.styles) {
           onImportLayout(parsed);
           onClose();
@@ -90,7 +81,7 @@ export const ExportModal: FC<ExportModalProps> = ({
         {/* Tab Controls */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 bg-zinc-950/40">
           <div className="flex gap-2">
-            {(['html', 'react', 'json'] as ExportTab[]).map((tab) => (
+            {['html', 'react', 'json'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}

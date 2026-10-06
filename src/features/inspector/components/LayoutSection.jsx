@@ -1,12 +1,4 @@
-import type { FC } from 'react';
-import type { ElementStyles, DisplayType, FlexDirection, FlexJustify, FlexAlign } from '@/core/types/element.types';
-
-interface LayoutSectionProps {
-  styles: ElementStyles;
-  onChange: (patch: Partial<ElementStyles>) => void;
-}
-
-export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
+export const LayoutSection = ({ styles = {}, onChange }) => {
   const display = styles.display || 'block';
 
   return (
@@ -15,7 +7,7 @@ export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
       <div>
         <label className="block text-[11px] font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">Display</label>
         <div className="grid grid-cols-3 gap-1 bg-zinc-950 p-1 rounded-md border border-zinc-800">
-          {(['block', 'flex', 'grid'] as DisplayType[]).map((type) => (
+          {['block', 'flex', 'grid'].map((type) => (
             <button
               key={type}
               onClick={() => onChange({ display: type })}
@@ -35,7 +27,7 @@ export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
           <div>
             <label className="block text-[11px] font-medium text-zinc-400 mb-1">Direction</label>
             <div className="grid grid-cols-2 gap-1 bg-zinc-950 p-1 rounded-md border border-zinc-800">
-              {(['row', 'column'] as FlexDirection[]).map((dir) => (
+              {['row', 'column'].map((dir) => (
                 <button
                   key={dir}
                   onClick={() => onChange({ flexDirection: dir })}
@@ -53,7 +45,7 @@ export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
             <label className="block text-[11px] font-medium text-zinc-400 mb-1">Justify Content</label>
             <select
               value={styles.justifyContent || 'flex-start'}
-              onChange={(e) => onChange({ justifyContent: e.target.value as FlexJustify })}
+              onChange={(e) => onChange({ justifyContent: e.target.value })}
               className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-200 focus:outline-none focus:border-blue-500"
             >
               <option value="flex-start">Start</option>
@@ -69,7 +61,7 @@ export const LayoutSection: FC<LayoutSectionProps> = ({ styles, onChange }) => {
             <label className="block text-[11px] font-medium text-zinc-400 mb-1">Align Items</label>
             <select
               value={styles.alignItems || 'stretch'}
-              onChange={(e) => onChange({ alignItems: e.target.value as FlexAlign })}
+              onChange={(e) => onChange({ alignItems: e.target.value })}
               className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-zinc-200 focus:outline-none focus:border-blue-500"
             >
               <option value="stretch">Stretch</option>
