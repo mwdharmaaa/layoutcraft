@@ -63,7 +63,7 @@ export const ExportModal: FC<ExportModalProps> = ({
           onImportLayout(parsed);
           onClose();
         }
-      } catch (err) {
+      } catch {
         alert('Invalid JSON layout file.');
       }
     };
