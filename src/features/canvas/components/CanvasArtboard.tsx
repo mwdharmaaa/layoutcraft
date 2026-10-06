@@ -20,6 +20,7 @@ interface CanvasArtboardProps {
   onMoveUp?: (id: string) => void;
   onMoveDown?: (id: string) => void;
   onCanvasClick: () => void;
+  onPasteImage?: (dataUrl: string) => void;
 }
 
 export const CanvasArtboard: FC<CanvasArtboardProps> = ({
@@ -38,8 +39,34 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
   onMoveUp,
   onMoveDown,
   onCanvasClick,
+  onPasteImage,
 }) => {
   const vpConfig = VIEWPORT_CONFIGS.find((v) => v.id === viewport) || VIEWPORT_CONFIGS[0];
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (loadEv) => {
+            if (typeof loadEv.target?.result === 'string') {
+              onPasteImage?.(loadEv.target.result);
+            }
+          };
+          reader.readAsDataURL(file);
+          break;
+        }
+      }
+    }
+  };
 
   return (
     <div
@@ -47,6 +74,8 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
         showGrid ? 'canvas-grid-pattern' : ''
       }`}
       onClick={onCanvasClick}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       <div
         className="transition-all duration-200 origin-top flex flex-col items-center shadow-2xl rounded-lg overflow-hidden my-4"

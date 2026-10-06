@@ -14,6 +14,7 @@ import {
   Code2,
   Trash2,
   Layout,
+  Keyboard,
 } from 'lucide-react';
 import type { DeviceViewport } from '@/core/types/studio.types';
 
@@ -32,6 +33,7 @@ interface StudioHeaderProps {
   onTogglePreview: () => void;
   onOpenExport: () => void;
   onClearCanvas: () => void;
+  onOpenShortcuts?: () => void;
 }
 
 export const StudioHeader: FC<StudioHeaderProps> = ({
@@ -49,6 +51,7 @@ export const StudioHeader: FC<StudioHeaderProps> = ({
   onTogglePreview,
   onOpenExport,
   onClearCanvas,
+  onOpenShortcuts,
 }) => {
   return (
     <header className="h-13 bg-zinc-900 border-b border-zinc-800 px-4 flex items-center justify-between select-none">
@@ -148,8 +151,18 @@ export const StudioHeader: FC<StudioHeaderProps> = ({
         </button>
       </div>
 
-      {/* Right Actions: Preview, Clear, Export */}
+      {/* Right Actions: Shortcuts, Clear, Preview, Export */}
       <div className="flex items-center gap-2">
+        {onOpenShortcuts && (
+          <button
+            onClick={onOpenShortcuts}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            title="Keyboard Shortcuts (?)"
+          >
+            <Keyboard className="w-4 h-4" />
+          </button>
+        )}
+
         <button
           onClick={onClearCanvas}
           className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-zinc-800 transition-colors"
