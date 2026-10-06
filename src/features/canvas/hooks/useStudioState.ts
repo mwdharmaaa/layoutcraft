@@ -143,7 +143,7 @@ export function useStudioState() {
   }, [rootNode, pushState]);
 
   const handlePasteNode = useCallback(
-    (nodeToPaste?: LayoutNode) => {
+    (nodeToPaste?: LayoutNode, inPlace?: boolean) => {
       const sourceNode = nodeToPaste || clipboardNode;
       if (!sourceNode) return;
       if (nodeToPaste && nodeToPaste !== clipboardNode) {
@@ -153,15 +153,98 @@ export function useStudioState() {
       const targetParentId = selectedId || rootNode.id;
       const targetParent = findNodeById(rootNode, targetParentId);
       const isContainer = targetParent?.children !== undefined;
-      const parentIdToUse = isContainer
-        ? targetParentId
-        : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
+      let parentIdToUse: string;
+      let insertIndex: number | undefined;
 
-      const updated = insertChildNode(rootNode, parentIdToUse, cloned);
+      if (inPlace && selectedId && selectedId !== rootNode.id) {
+        const parent = findParentNode(rootNode, selectedId);
+        parentIdToUse = parent?.id || rootNode.id;
+        if (parent?.children) {
+          const siblingIndex = parent.children.findIndex((c) => c.id === selectedId);
+          insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+        }
+      } else if (isContainer) {
+        parentIdToUse = targetParentId;
+        insertIndex = targetParent.children?.length;
+      } else {
+        const parent = findParentNode(rootNode, targetParentId);
+        parentIdToUse = parent?.id || rootNode.id;
+        if (parent?.children) {
+          const siblingIndex = parent.children.findIndex((c) => c.id === targetParentId);
+          insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+        }
+      }
+
+      const updated = insertChildNode(rootNode, parentIdToUse, cloned, insertIndex);
       pushState(updated);
       setSelectedId(cloned.id);
     },
     [clipboardNode, selectedId, rootNode, pushState]
+  );
+
+  const handlePasteText = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const targetNode = selectedId ? findNodeById(rootNode, selectedId) : null;
+      const isTextLeaf =
+        targetNode &&
+        (!targetNode.children || targetNode.children.length === 0) &&
+        ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'button', 'a', 'label'].includes(targetNode.tag);
+
+      if (targetNode && isTextLeaf) {
+        const updated = updateNodeById(rootNode, targetNode.id, (n) => ({
+          ...n,
+          content: trimmed,
+        }));
+        pushState(updated);
+        return;
+      }
+
+      const textNode: LayoutNode = {
+        id: generateElementId('p'),
+        name: 'Text Block',
+        tag: 'p',
+        category: 'typography',
+        content: trimmed,
+        styles: {
+          color: '#f4f4f5',
+          fontSize: '16px',
+          lineHeight: '1.6',
+          marginTop: '8px',
+          marginBottom: '8px',
+        },
+      };
+
+      const targetParentId = selectedId || rootNode.id;
+      const targetParent = findNodeById(rootNode, targetParentId);
+      const isContainer = targetParent?.children !== undefined;
+      let parentIdToUse: string;
+      let insertIndex: number | undefined;
+
+      if (isContainer) {
+        parentIdToUse = targetParentId;
+        insertIndex = targetParent.children?.length;
+      } else {
+        const parent = findParentNode(rootNode, targetParentId);
+        parentIdToUse = parent?.id || rootNode.id;
+        if (parent?.children) {
+          const siblingIndex = parent.children.findIndex((c) => c.id === targetParentId);
+          insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+        }
+      }
+
+      const updated = insertChildNode(rootNode, parentIdToUse, textNode, insertIndex);
+      pushState(updated);
+      setSelectedId(textNode.id);
+
+      setTimeout(() => {
+        const el = document.getElementById(`canvas-${textNode.id}`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 60);
+    },
+    [selectedId, rootNode, pushState]
   );
 
   const handlePasteImage = useCallback((dataUrl: string) => {
@@ -264,6 +347,7 @@ export function useStudioState() {
     onCut: handleCutNode,
     onPasteNode: handlePasteNode,
     onPasteImage: handlePasteImage,
+    onPasteText: handlePasteText,
     onDuplicate: handleDuplicateNode,
     onDelete: handleDeleteNode,
     onMoveOrder: handleMoveOrder,
