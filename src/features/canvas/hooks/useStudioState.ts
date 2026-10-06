@@ -12,7 +12,9 @@ import {
   duplicateNodeById,
   findParentNode,
   reorderChildNodes,
+  cloneNodeWithNewIds,
 } from '@/core/utils/tree_operations';
+import { generateElementId } from '@/core/utils/id_generator';
 
 export function useStudioState() {
   const [rootNode, setRootNode] = useState<LayoutNode>(DEFAULT_LAYOUT);
@@ -25,6 +27,7 @@ export function useStudioState() {
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('components');
   const [inspectorTab, setInspectorTab] = useState<InspectorTab>('layout');
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [clipboardNode, setClipboardNode] = useState<LayoutNode | null>(null);
 
   // History stack for Undo / Redo
   const [history, setHistory] = useState<LayoutNode[]>([DEFAULT_LAYOUT]);
@@ -110,6 +113,62 @@ export function useStudioState() {
     pushState(updated);
   }, [rootNode, pushState]);
 
+  const handleCopyNode = useCallback((id: string) => {
+    if (id === rootNode.id) return;
+    const node = findNodeById(rootNode, id);
+    if (node) {
+      setClipboardNode(node);
+    }
+  }, [rootNode]);
+
+  const handlePasteNode = useCallback(() => {
+    if (!clipboardNode) return;
+    const cloned = cloneNodeWithNewIds(clipboardNode);
+    const targetParentId = selectedId || rootNode.id;
+    const targetParent = findNodeById(rootNode, targetParentId);
+    const isContainer = targetParent?.children !== undefined;
+    const parentIdToUse = isContainer
+      ? targetParentId
+      : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
+
+    const updated = insertChildNode(rootNode, parentIdToUse, cloned);
+    pushState(updated);
+    setSelectedId(cloned.id);
+  }, [clipboardNode, selectedId, rootNode, pushState]);
+
+  const handlePasteImage = useCallback((dataUrl: string) => {
+    const imgNode: LayoutNode = {
+      id: generateElementId('img'),
+      name: 'Screenshot Image',
+      tag: 'img',
+      category: 'media',
+      attributes: {
+        src: dataUrl,
+        alt: 'Pasted Screenshot',
+      },
+      styles: {
+        width: '100%',
+        maxWidth: '720px',
+        height: 'auto',
+        borderRadius: '8px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
+        marginTop: '12px',
+        marginBottom: '12px',
+      },
+    };
+
+    const targetParentId = selectedId || rootNode.id;
+    const targetParent = findNodeById(rootNode, targetParentId);
+    const isContainer = targetParent?.children !== undefined;
+    const parentIdToUse = isContainer
+      ? targetParentId
+      : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
+
+    const updated = insertChildNode(rootNode, parentIdToUse, imgNode);
+    pushState(updated);
+    setSelectedId(imgNode.id);
+  }, [selectedId, rootNode, pushState]);
+
   const handleMoveOrder = useCallback((id: string, direction: 'up' | 'down') => {
     const parent = findParentNode(rootNode, id);
     if (!parent || !parent.children) return;
@@ -150,7 +209,7 @@ export function useStudioState() {
     setSelectedId(null);
   }, [pushState]);
 
-  // Keyboard shortcuts
+  // Keyboard and paste shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
@@ -161,6 +220,9 @@ export function useStudioState() {
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
         e.preventDefault();
         handleRedo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedId && selectedId !== rootNode.id) {
+        e.preventDefault();
+        handleCopyNode(selectedId);
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedId) {
         e.preventDefault();
         handleDuplicateNode(selectedId);
@@ -170,9 +232,55 @@ export function useStudioState() {
       }
     };
 
+    const handleWindowPaste = (e: ClipboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      const items = e.clipboardData?.items;
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (item.type.indexOf('image') !== -1) {
+            const file = item.getAsFile();
+            if (file) {
+              e.preventDefault();
+              const reader = new FileReader();
+              reader.onload = (loadEv) => {
+                const res = loadEv.target?.result;
+                if (typeof res === 'string') {
+                  handlePasteImage(res);
+                }
+              };
+              reader.readAsDataURL(file);
+              return;
+            }
+          }
+        }
+      }
+
+      if (clipboardNode) {
+        e.preventDefault();
+        handlePasteNode();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleUndo, handleRedo, handleDuplicateNode, handleDeleteNode, selectedId, rootNode.id]);
+    window.addEventListener('paste', handleWindowPaste);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('paste', handleWindowPaste);
+    };
+  }, [
+    handleUndo,
+    handleRedo,
+    handleCopyNode,
+    handlePasteNode,
+    handlePasteImage,
+    handleDuplicateNode,
+    handleDeleteNode,
+    selectedId,
+    rootNode.id,
+    clipboardNode,
+  ]);
 
   const selectedNode = selectedId ? findNodeById(rootNode, selectedId) : null;
 
@@ -188,6 +296,7 @@ export function useStudioState() {
     sidebarTab,
     inspectorTab,
     isExportOpen,
+    clipboardNode,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < history.length - 1,
     setHoveredId,
@@ -207,6 +316,9 @@ export function useStudioState() {
     handleUpdateName,
     handleDeleteNode,
     handleDuplicateNode,
+    handleCopyNode,
+    handlePasteNode,
+    handlePasteImage,
     handleMoveOrder,
     handleToggleVisibility,
     handleSelectTemplate,

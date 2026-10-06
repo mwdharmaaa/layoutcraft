@@ -93,6 +93,29 @@ export const CanvasRenderer: FC<CanvasRendererProps> = ({
     );
   }
 
+  if (node.tag === 'img') {
+    const imgSrc = node.attributes?.src || node.content || '';
+    return (
+      <div className="relative inline-block max-w-full">
+        {isSelected && (
+          <ElementBoundingBox
+            node={node}
+            onDuplicate={onDuplicate}
+            onDelete={onDelete}
+            onMoveUp={onMoveUp}
+            onMoveDown={onMoveDown}
+          />
+        )}
+        <img
+          {...commonProps}
+          src={imgSrc}
+          alt={node.attributes?.alt || node.name || 'Image'}
+          draggable={false}
+        />
+      </div>
+    );
+  }
+
   const Tag = (node.tag || 'div') as keyof JSX.IntrinsicElements;
   const canEditInline = !isPreview && isSelected && node.children?.length === 0;
 

@@ -52,9 +52,13 @@ export function generateReactJsx(node: LayoutNode, indent = '    '): string {
   const styleObj = JSON.stringify(node.styles);
   const tag = node.tag || 'div';
   const isVoid = ['input', 'img', 'hr', 'br'].includes(tag);
+  const attrEntries = Object.entries(node.attributes || {});
+  const extraProps = attrEntries.length > 0
+    ? ' ' + attrEntries.map(([k, v]) => `${k}="${v}"`).join(' ')
+    : '';
 
   if (isVoid) {
-    return `${indent}<${tag} style={${styleObj}} />\n`;
+    return `${indent}<${tag} style={${styleObj}}${extraProps} />\n`;
   }
 
   const childrenCode = (node.children || [])
