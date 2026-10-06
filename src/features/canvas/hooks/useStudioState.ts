@@ -142,20 +142,27 @@ export function useStudioState() {
     }
   }, [rootNode, pushState]);
 
-  const handlePasteNode = useCallback(() => {
-    if (!clipboardNode) return;
-    const cloned = cloneNodeWithNewIds(clipboardNode);
-    const targetParentId = selectedId || rootNode.id;
-    const targetParent = findNodeById(rootNode, targetParentId);
-    const isContainer = targetParent?.children !== undefined;
-    const parentIdToUse = isContainer
-      ? targetParentId
-      : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
+  const handlePasteNode = useCallback(
+    (nodeToPaste?: LayoutNode) => {
+      const sourceNode = nodeToPaste || clipboardNode;
+      if (!sourceNode) return;
+      if (nodeToPaste && nodeToPaste !== clipboardNode) {
+        setClipboardNode(nodeToPaste);
+      }
+      const cloned = cloneNodeWithNewIds(sourceNode);
+      const targetParentId = selectedId || rootNode.id;
+      const targetParent = findNodeById(rootNode, targetParentId);
+      const isContainer = targetParent?.children !== undefined;
+      const parentIdToUse = isContainer
+        ? targetParentId
+        : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
 
-    const updated = insertChildNode(rootNode, parentIdToUse, cloned);
-    pushState(updated);
-    setSelectedId(cloned.id);
-  }, [clipboardNode, selectedId, rootNode, pushState]);
+      const updated = insertChildNode(rootNode, parentIdToUse, cloned);
+      pushState(updated);
+      setSelectedId(cloned.id);
+    },
+    [clipboardNode, selectedId, rootNode, pushState]
+  );
 
   const handlePasteImage = useCallback((dataUrl: string) => {
     const imgNode: LayoutNode = {
