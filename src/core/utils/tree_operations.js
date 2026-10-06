@@ -1,7 +1,7 @@
-import type { LayoutNode } from '../types/element.types';
 import { generateElementId } from './id_generator';
 
-export function findNodeById(root: LayoutNode, id: string): LayoutNode | null {
+export function findNodeById(root, id) {
+  if (!root) return null;
   if (root.id === id) return root;
   if (!root.children) return null;
 
@@ -12,8 +12,8 @@ export function findNodeById(root: LayoutNode, id: string): LayoutNode | null {
   return null;
 }
 
-export function findParentNode(root: LayoutNode, targetId: string): LayoutNode | null {
-  if (!root.children) return null;
+export function findParentNode(root, targetId) {
+  if (!root || !root.children) return null;
   for (const child of root.children) {
     if (child.id === targetId) return root;
     const parent = findParentNode(child, targetId);
@@ -22,11 +22,8 @@ export function findParentNode(root: LayoutNode, targetId: string): LayoutNode |
   return null;
 }
 
-export function updateNodeById(
-  root: LayoutNode,
-  id: string,
-  transform: (node: LayoutNode) => LayoutNode
-): LayoutNode {
+export function updateNodeById(root, id, transform) {
+  if (!root) return root;
   if (root.id === id) {
     return transform(root);
   }
@@ -38,12 +35,7 @@ export function updateNodeById(
   };
 }
 
-export function insertChildNode(
-  root: LayoutNode,
-  parentId: string,
-  newNode: LayoutNode,
-  index?: number
-): LayoutNode {
+export function insertChildNode(root, parentId, newNode, index) {
   return updateNodeById(root, parentId, (parent) => {
     const children = parent.children ? [...parent.children] : [];
     if (typeof index === 'number' && index >= 0 && index <= children.length) {
@@ -55,7 +47,8 @@ export function insertChildNode(
   });
 }
 
-export function removeNodeById(root: LayoutNode, id: string): LayoutNode {
+export function removeNodeById(root, id) {
+  if (!root) return root;
   if (root.id === id) return root; // Root cannot be deleted
   if (!root.children) return root;
 
@@ -67,7 +60,8 @@ export function removeNodeById(root: LayoutNode, id: string): LayoutNode {
   };
 }
 
-export function cloneNodeWithNewIds(node: LayoutNode): LayoutNode {
+export function cloneNodeWithNewIds(node) {
+  if (!node) return node;
   const newId = generateElementId(node.tag);
   return {
     ...node,
@@ -77,7 +71,7 @@ export function cloneNodeWithNewIds(node: LayoutNode): LayoutNode {
   };
 }
 
-export function duplicateNodeById(root: LayoutNode, id: string): LayoutNode {
+export function duplicateNodeById(root, id) {
   const parent = findParentNode(root, id);
   if (!parent || !parent.children) return root;
 
@@ -88,12 +82,7 @@ export function duplicateNodeById(root: LayoutNode, id: string): LayoutNode {
   return insertChildNode(root, parent.id, cloned, targetIndex + 1);
 }
 
-export function reorderChildNodes(
-  root: LayoutNode,
-  parentId: string,
-  fromIndex: number,
-  toIndex: number
-): LayoutNode {
+export function reorderChildNodes(root, parentId, fromIndex, toIndex) {
   return updateNodeById(root, parentId, (parent) => {
     if (!parent.children) return parent;
     const children = [...parent.children];

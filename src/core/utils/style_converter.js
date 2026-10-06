@@ -1,9 +1,7 @@
-import type { CSSProperties } from 'react';
-import type { ElementStyles } from '../types/element.types';
+export function stylesToCssProperties(styles) {
+  const css = {};
 
-export function stylesToCssProperties(styles: ElementStyles): CSSProperties {
-  const css: CSSProperties = {};
-
+  if (!styles) return css;
   if (styles.display) css.display = styles.display;
   if (styles.flexDirection) css.flexDirection = styles.flexDirection;
   if (styles.justifyContent) css.justifyContent = styles.justifyContent;
@@ -51,7 +49,7 @@ export function stylesToCssProperties(styles: ElementStyles): CSSProperties {
   return css;
 }
 
-export function stylesToCssString(styles: ElementStyles): string {
+export function stylesToCssString(styles) {
   const css = stylesToCssProperties(styles);
   return Object.entries(css)
     .map(([key, val]) => {

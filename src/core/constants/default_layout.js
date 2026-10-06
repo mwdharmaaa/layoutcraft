@@ -1,6 +1,4 @@
-import type { LayoutNode } from '../types/element.types';
-
-export const DEFAULT_LAYOUT: LayoutNode = {
+﻿export const DEFAULT_LAYOUT = {
   id: 'root-canvas',
   name: 'Canvas Page',
   tag: 'div',

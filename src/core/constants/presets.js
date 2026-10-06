@@ -1,6 +1,4 @@
-import type { ViewportConfig } from '../types/studio.types';
-
-export const VIEWPORT_CONFIGS: ViewportConfig[] = [
+﻿export const VIEWPORT_CONFIGS = [
   { id: 'desktop', name: 'Desktop', width: 1280, height: 800 },
   { id: 'laptop', name: 'Laptop', width: 1024, height: 680 },
   { id: 'tablet', name: 'Tablet', width: 768, height: 900 },
