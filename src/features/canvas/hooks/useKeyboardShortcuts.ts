@@ -3,13 +3,15 @@ import type { LayoutNode } from '@/core/types/element.types';
 import type { ToastMessage } from '@/core/types/shortcut.types';
 import { findNodeById } from '@/core/utils/tree_operations';
 import {
-  extractImageFromClipboard,
+  extractImageDetailsFromClipboard,
+  extractImageDetailsFromSystemClipboard,
   extractNodeFromClipboard,
   extractTextFromClipboard,
-  extractImageFromSystemClipboard,
   extractNodeFromSystemClipboard,
   extractTextFromSystemClipboard,
   hasImageInClipboardData,
+  isImageUrl,
+  type ExtractedImageInfo,
 } from '../utils/clipboard_helpers';
 
 interface UseKeyboardShortcutsParams {
@@ -21,7 +23,10 @@ interface UseKeyboardShortcutsParams {
   onCopy: (id: string) => void;
   onCut: (id: string) => void;
   onPasteNode: (node?: LayoutNode, inPlace?: boolean) => void;
-  onPasteImage: (dataUrl: string) => void;
+  onPasteImage: (
+    dataUrl: string,
+    options?: { name?: string; alt?: string; isScreenshot?: boolean }
+  ) => void;
   onPasteText?: (text: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
@@ -91,11 +96,15 @@ export function useKeyboardShortcuts({
       // BRANCH A: Ctrl + Shift + V -> Dedicated Screenshot Pasting ("paste gambar hasil ssan")
       // ─────────────────────────────────────────────────────────────
       if (isShiftPressed) {
-        // 1. Try extracting image from provided event dataTransfer
+        // 1. Try extracting from provided event dataTransfer
         if (dataTransfer) {
-          const imgData = await extractImageFromClipboard(dataTransfer);
-          if (imgData) {
-            onPasteImage(imgData);
+          const imgDetails = await extractImageDetailsFromClipboard(dataTransfer);
+          if (imgDetails?.dataUrl) {
+            onPasteImage(imgDetails.dataUrl, {
+              name: 'Screenshot Image',
+              alt: 'Pasted Screenshot',
+              isScreenshot: true,
+            });
             showToast('Screenshot pasted to canvas', 'success');
             return;
           }
@@ -103,15 +112,23 @@ export function useKeyboardShortcuts({
 
         // 2. Try parsing fallback data:image from textarea catcher
         if (catcherValue && catcherValue.trim().startsWith('data:image/')) {
-          onPasteImage(catcherValue.trim());
+          onPasteImage(catcherValue.trim(), {
+            name: 'Screenshot Image',
+            alt: 'Pasted Screenshot',
+            isScreenshot: true,
+          });
           showToast('Screenshot pasted to canvas', 'success');
           return;
         }
 
-        // 3. Query system clipboard for image blob / screenshot
-        const systemImg = await extractImageFromSystemClipboard(200);
-        if (systemImg) {
-          onPasteImage(systemImg);
+        // 3. Query system clipboard for screenshot
+        const systemImg = await extractImageDetailsFromSystemClipboard(200);
+        if (systemImg?.dataUrl) {
+          onPasteImage(systemImg.dataUrl, {
+            name: 'Screenshot Image',
+            alt: 'Pasted Screenshot',
+            isScreenshot: true,
+          });
           showToast('Screenshot pasted to canvas', 'success');
           return;
         }
@@ -121,7 +138,7 @@ export function useKeyboardShortcuts({
       }
 
       // ─────────────────────────────────────────────────────────────
-      // BRANCH B: Ctrl + V -> Copy & Paste Element / Image ("coppy n paste gambar / elemen")
+      // BRANCH B: Ctrl + V -> Copy & Paste Element / Copied Image ("coppy n paste gambar / elemen")
       // ─────────────────────────────────────────────────────────────
       const notifyNodePasted = (node: LayoutNode) => {
         const isImage = node.tag === 'img';
@@ -170,7 +187,39 @@ export function useKeyboardShortcuts({
         return;
       }
 
-      // 5. Try plain text insertion from dataTransfer, catcher, or system clipboard
+      // 5. Extract image details from dataTransfer or system clipboard
+      let imageDetails: ExtractedImageInfo | null = null;
+      if (dataTransfer) {
+        imageDetails = await extractImageDetailsFromClipboard(dataTransfer);
+      }
+      if (!imageDetails && catcherValue && catcherValue.trim()) {
+        const trimmed = catcherValue.trim();
+        if (trimmed.startsWith('data:image/') || isImageUrl(trimmed)) {
+          imageDetails = {
+            dataUrl: trimmed,
+            isCopiedImage: true,
+            isScreenshot: false,
+            name: 'Image',
+            alt: 'Copied Image',
+          };
+        }
+      }
+      if (!imageDetails) {
+        imageDetails = await extractImageDetailsFromSystemClipboard(150);
+      }
+
+      // 6. If user copied an image (web / Pinterest / file / URL / data URI), paste it!
+      if (imageDetails && imageDetails.isCopiedImage) {
+        onPasteImage(imageDetails.dataUrl, {
+          name: imageDetails.name || 'Image',
+          alt: imageDetails.alt || 'Copied Image',
+          isScreenshot: false,
+        });
+        showToast('Image pasted to canvas', 'success');
+        return;
+      }
+
+      // 7. Try plain text insertion
       let textToPaste: string | null = null;
       if (dataTransfer) {
         textToPaste = extractTextFromClipboard(dataTransfer);
@@ -182,7 +231,7 @@ export function useKeyboardShortcuts({
         textToPaste = await extractTextFromSystemClipboard(150);
       }
 
-      if (textToPaste && !textToPaste.startsWith('data:image/')) {
+      if (textToPaste && !textToPaste.startsWith('data:image/') && !isImageUrl(textToPaste)) {
         if (onPasteText) {
           onPasteText(textToPaste);
           showToast('Text pasted to canvas', 'success');
@@ -190,18 +239,14 @@ export function useKeyboardShortcuts({
         }
       }
 
-      // 6. If user pressed Ctrl+V but clipboard only holds a screenshot/image, guide them to Ctrl+Shift+V
-      const hasImage =
-        hasImageInClipboardData(dataTransfer ?? null) ||
-        Boolean(catcherValue?.trim().startsWith('data:image/')) ||
-        Boolean(await extractImageFromSystemClipboard(100));
-
-      if (hasImage) {
-        showToast('Press Ctrl+Shift+V to paste screenshot image', 'info');
+      // 8. If clipboard holds a SCREENSHOT (not a copied image)
+      // Per specification: Ctrl+V pastes copied images; screenshots require Ctrl+Shift+V
+      if (imageDetails && imageDetails.isScreenshot) {
+        showToast('Screenshot detected. Press Ctrl+Shift+V to paste screenshot', 'info');
         return;
       }
 
-      showToast('Clipboard is empty. Copy an element first (Ctrl+C)', 'warning');
+      showToast('Clipboard is empty. Copy an image or element first (Ctrl+C)', 'warning');
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
