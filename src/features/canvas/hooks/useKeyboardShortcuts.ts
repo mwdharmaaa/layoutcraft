@@ -6,6 +6,7 @@ import {
   extractNodeFromClipboard,
   extractImageFromSystemClipboard,
   extractNodeFromSystemClipboard,
+  hasImageInClipboardData,
 } from '../utils/clipboard_helpers';
 
 interface UseKeyboardShortcutsParams {
@@ -59,7 +60,7 @@ export function useKeyboardShortcuts({
   useEffect(() => {
     const handlePasteAction = async (dataTransfer?: DataTransfer | null) => {
       const now = Date.now();
-      if (now - lastPasteTimeRef.current < 250) return;
+      if (now - lastPasteTimeRef.current < 200) return;
       lastPasteTimeRef.current = now;
 
       // 1. Try extracting image from provided event dataTransfer
@@ -80,18 +81,18 @@ export function useKeyboardShortcuts({
         }
       }
 
-      // 3. Fallback to in-memory copied node
-      if (clipboardNode) {
-        onPasteNode(clipboardNode);
-        showToast('Component pasted to canvas', 'success');
-        return;
-      }
-
-      // 4. Try async reading image from system navigator.clipboard
+      // 3. Try async reading image from system navigator.clipboard FIRST before fallback node
       const systemImg = await extractImageFromSystemClipboard();
       if (systemImg) {
         onPasteImage(systemImg);
         showToast('Screenshot pasted to canvas', 'success');
+        return;
+      }
+
+      // 4. Fallback to in-memory copied node
+      if (clipboardNode) {
+        onPasteNode(clipboardNode);
+        showToast('Component pasted to canvas', 'success');
         return;
       }
 
@@ -119,14 +120,31 @@ export function useKeyboardShortcuts({
       const isCtrlOrMeta = e.ctrlKey || e.metaKey;
       const isSelected = Boolean(selectedId && selectedId !== rootNode.id);
 
-      // Allow browser to emit native paste event for Ctrl+V with fallback
+      // Allow browser to emit native paste event for Ctrl+V with robust fallback
       if (isCtrlOrMeta && (e.key === 'v' || e.key === 'V')) {
         pasteHandledRef.current = false;
-        setTimeout(() => {
+
+        // Initiate system clipboard read immediately within user gesture window
+        const systemClipboardPromise = extractImageFromSystemClipboard();
+
+        // If an unfocusable or interactive non-input element has focus (like a button),
+        // blur it so the browser delivers the native paste event to body/window
+        if (target && target !== document.body && !isInput && !target.isContentEditable) {
+          target.blur();
+        }
+
+        setTimeout(async () => {
           if (!pasteHandledRef.current) {
+            const systemImg = await systemClipboardPromise;
+            if (systemImg) {
+              pasteHandledRef.current = true;
+              onPasteImage(systemImg);
+              showToast('Screenshot pasted to canvas', 'success');
+              return;
+            }
             handlePasteAction(null);
           }
-        }, 60);
+        }, 50);
         return;
       }
 
@@ -218,20 +236,19 @@ export function useKeyboardShortcuts({
         target instanceof HTMLInputElement ||
         target instanceof HTMLTextAreaElement;
 
-      const hasImage =
-        e.clipboardData?.files &&
-        Array.from(e.clipboardData.files).some((f) => f.type.startsWith('image/'));
+      const clipboardData = e.clipboardData;
+      const hasImage = hasImageInClipboardData(clipboardData);
 
-      // In real inputs, allow native paste if plain text
+      // In real inputs, allow native paste if plain text and no image
       if (isInput && !hasImage) {
         return;
       }
 
-      // In contentEditable text spans, allow native text paste unless it is serialized node JSON
+      // In contentEditable text spans, allow native text paste unless it is serialized node JSON or image
       if (target?.isContentEditable && !hasImage) {
-        const text = e.clipboardData?.getData('text/plain')?.trim();
+        const text = clipboardData?.getData('text/plain')?.trim();
         if (text?.startsWith('{')) {
-          const parsed = extractNodeFromClipboard(e.clipboardData);
+          const parsed = extractNodeFromClipboard(clipboardData);
           if (parsed) {
             e.preventDefault();
             pasteHandledRef.current = true;
@@ -245,14 +262,16 @@ export function useKeyboardShortcuts({
 
       e.preventDefault();
       pasteHandledRef.current = true;
-      handlePasteAction(e.clipboardData);
+      handlePasteAction(clipboardData);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('paste', handlePasteEvent);
+    window.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('paste', handlePasteEvent, true);
+    document.addEventListener('paste', handlePasteEvent, true);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('paste', handlePasteEvent);
+      window.removeEventListener('keydown', handleKeyDown, true);
+      window.removeEventListener('paste', handlePasteEvent, true);
+      document.removeEventListener('paste', handlePasteEvent, true);
     };
   }, [
     rootNode,
