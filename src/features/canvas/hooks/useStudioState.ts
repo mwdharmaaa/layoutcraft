@@ -188,13 +188,29 @@ export function useStudioState() {
     const targetParentId = selectedId || rootNode.id;
     const targetParent = findNodeById(rootNode, targetParentId);
     const isContainer = targetParent?.children !== undefined;
-    const parentIdToUse = isContainer
-      ? targetParentId
-      : (findParentNode(rootNode, targetParentId)?.id || rootNode.id);
+    let parentIdToUse: string;
+    let insertIndex: number | undefined;
 
-    const updated = insertChildNode(rootNode, parentIdToUse, imgNode);
+    if (isContainer) {
+      parentIdToUse = targetParentId;
+      insertIndex = targetParent.children?.length;
+    } else {
+      const parent = findParentNode(rootNode, targetParentId);
+      parentIdToUse = parent?.id || rootNode.id;
+      if (parent?.children) {
+        const siblingIndex = parent.children.findIndex((c) => c.id === targetParentId);
+        insertIndex = siblingIndex !== -1 ? siblingIndex + 1 : undefined;
+      }
+    }
+
+    const updated = insertChildNode(rootNode, parentIdToUse, imgNode, insertIndex);
     pushState(updated);
     setSelectedId(imgNode.id);
+
+    setTimeout(() => {
+      const el = document.getElementById(`canvas-${imgNode.id}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 60);
   }, [selectedId, rootNode, pushState]);
 
   const handleMoveOrder = useCallback((id: string, direction: 'up' | 'down') => {

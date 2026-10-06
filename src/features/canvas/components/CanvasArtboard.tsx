@@ -1,8 +1,9 @@
-import type { FC, MouseEvent } from 'react';
+import { useRef, type FC, type MouseEvent } from 'react';
 import type { LayoutNode } from '@/core/types/element.types';
 import type { DeviceViewport } from '@/core/types/studio.types';
 import { VIEWPORT_CONFIGS } from '@/core/constants/presets';
 import { CanvasRenderer } from './CanvasRenderer';
+import { extractImageFromClipboard } from '../utils/clipboard_helpers';
 
 interface CanvasArtboardProps {
   rootNode: LayoutNode;
@@ -41,6 +42,7 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
   onCanvasClick,
   onPasteImage,
 }) => {
+  const artboardRef = useRef<HTMLDivElement>(null);
   const vpConfig = VIEWPORT_CONFIGS.find((v) => v.id === viewport) || VIEWPORT_CONFIGS[0];
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -54,7 +56,11 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        if (file.type.startsWith('image/')) {
+        if (
+          file.type.startsWith('image/') ||
+          /\.(png|jpe?g|webp|gif|bmp|svg)$/i.test(file.name) ||
+          file.type === ''
+        ) {
           const reader = new FileReader();
           reader.onload = (loadEv) => {
             if (typeof loadEv.target?.result === 'string') {
@@ -68,12 +74,32 @@ export const CanvasArtboard: FC<CanvasArtboardProps> = ({
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    if (!onPasteImage) return;
+    const clipboardData = e.clipboardData;
+    if (clipboardData) {
+      extractImageFromClipboard(clipboardData).then((imgData) => {
+        if (imgData) {
+          e.preventDefault();
+          e.stopPropagation();
+          onPasteImage(imgData);
+        }
+      });
+    }
+  };
+
   return (
     <div
-      className={`flex-1 relative overflow-auto p-8 flex items-start justify-center transition-all bg-[#09090b] ${
+      ref={artboardRef}
+      tabIndex={0}
+      className={`flex-1 relative overflow-auto p-8 flex items-start justify-center transition-all bg-[#09090b] outline-none ${
         showGrid ? 'canvas-grid-pattern' : ''
       }`}
-      onClick={onCanvasClick}
+      onClick={() => {
+        artboardRef.current?.focus();
+        onCanvasClick();
+      }}
+      onPaste={handlePaste}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
