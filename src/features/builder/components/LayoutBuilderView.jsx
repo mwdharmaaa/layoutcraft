@@ -70,6 +70,7 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
           showGrid={showGrid}
           snapToGrid={snapToGrid}
           zoom={zoom}
+          onZoomChange={setZoom}
           onSelectBox={setSelectedBoxId}
           onUpdateBox={handleUpdateBox}
           onCommitState={handleCommitCurrentState}
