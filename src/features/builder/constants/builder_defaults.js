@@ -2,6 +2,13 @@ export const DEFAULT_GRID_SIZE = 20;
 
 export const GRID_SIZE_OPTIONS = [10, 20, 30, 40];
 
+export const DEFAULT_RESIZABLE_SIDES = {
+  top: true,
+  right: true,
+  bottom: true,
+  left: true,
+};
+
 export const BOX_COLOR_PALETTES = [
   { id: 'zinc', bg: '#18181b', border: '#27272a', text: '#f4f4f5', name: 'Zinc' },
   { id: 'blue', bg: '#1e3a5f', border: '#2563eb', text: '#93c5fd', name: 'Blue' },
@@ -61,6 +68,7 @@ export const INITIAL_BUILDER_BOXES = [
     textColor: '#93c5fd',
     borderRadius: 8,
     zIndex: 1,
+    resizableSides: { ...DEFAULT_RESIZABLE_SIDES },
   },
   {
     id: 'box-2',
@@ -74,6 +82,7 @@ export const INITIAL_BUILDER_BOXES = [
     textColor: '#f4f4f5',
     borderRadius: 8,
     zIndex: 1,
+    resizableSides: { ...DEFAULT_RESIZABLE_SIDES },
   },
   {
     id: 'box-3',
@@ -87,5 +96,6 @@ export const INITIAL_BUILDER_BOXES = [
     textColor: '#e4e4e7',
     borderRadius: 8,
     zIndex: 1,
+    resizableSides: { ...DEFAULT_RESIZABLE_SIDES },
   },
 ];
