@@ -12,7 +12,7 @@ export const BoxPropertyBar = ({
 }) => {
   if (!selectedBox) {
     return (
-      <aside className="w-72 bg-zinc-900 border-l border-zinc-800 p-4 flex flex-col items-center justify-center text-center select-none text-zinc-500 text-xs">
+      <aside className="w-72 shrink-0 bg-zinc-900 border-l border-zinc-800 p-4 flex flex-col items-center justify-center text-center select-none text-zinc-500 text-xs">
         <Sliders className="w-6 h-6 mb-2 text-zinc-600" />
         <p className="font-medium text-zinc-400">No Box Selected</p>
         <p className="text-[11px] text-zinc-600 mt-1">
@@ -23,7 +23,7 @@ export const BoxPropertyBar = ({
   }
 
   return (
-    <aside className="w-72 bg-zinc-900 border-l border-zinc-800 flex flex-col h-full overflow-y-auto select-none p-4 space-y-5 text-xs text-zinc-300">
+    <aside className="w-72 shrink-0 bg-zinc-900 border-l border-zinc-800 flex flex-col h-full overflow-y-auto select-none p-4 space-y-5 text-xs text-zinc-300">
       {/* Box Name */}
       <div>
         <label className="text-[11px] font-semibold text-zinc-400 block mb-1.5 uppercase tracking-wider">

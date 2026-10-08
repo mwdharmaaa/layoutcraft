@@ -50,7 +50,7 @@ export const BuilderCanvas = ({
           onSelectBox(null);
         }
       }}
-      className="flex-1 relative overflow-auto p-8 sm:p-12 flex items-start justify-center bg-zinc-950 select-none scroll-smooth"
+      className="flex-1 min-w-0 h-full relative overflow-auto p-8 sm:p-12 flex bg-zinc-950 select-none scroll-smooth"
     >
       {/* Sizer Wrapper for Accurate Scaled Scroll Bounds */}
       <div
@@ -63,7 +63,7 @@ export const BuilderCanvas = ({
             onSelectBox(null);
           }
         }}
-        className="relative flex flex-col items-center pb-32"
+        className="relative flex flex-col items-center pb-32 m-auto shrink-0"
       >
         {/* Canvas Board Surface */}
         <div

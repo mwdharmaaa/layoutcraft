@@ -7,7 +7,7 @@ export const CanvasZoomControls = ({
   onResetZoom,
 }) => {
   return (
-    <aside className="fixed bottom-6 right-80 z-40 select-none pointer-events-auto">
+    <aside className="absolute bottom-6 right-6 z-30 select-none pointer-events-auto">
       <div className="flex items-center gap-1 bg-zinc-900/90 backdrop-blur-md border border-zinc-800 rounded-xl px-2 py-1.5 shadow-2xl">
         <button
           type="button"
