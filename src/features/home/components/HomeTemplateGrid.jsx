@@ -1,44 +1,50 @@
-import { Layers, ArrowRight } from 'lucide-react';
+import { Layers, ArrowUpRight } from 'lucide-react';
 import { BUILDER_TEMPLATES } from '@/features/builder/constants/builder_templates';
 
 export const HomeTemplateGrid = ({ onSelectTemplate }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {BUILDER_TEMPLATES.map((template) => {
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {BUILDER_TEMPLATES.map((template, idx) => {
         const boxCount = template.boxes.length;
+        const numberTag = String(idx + 1).padStart(2, '0');
+
         return (
           <div
             key={template.id}
             onClick={() => onSelectTemplate(template)}
-            className="group bg-zinc-900/50 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-xl p-4 flex flex-col justify-between transition-all cursor-pointer shadow-sm hover:shadow-xl hover:shadow-black/40 hover:-translate-y-0.5"
+            className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-1"
           >
-            <div>
-              {/* Header */}
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <h4 className="text-sm font-semibold text-zinc-100 group-hover:text-blue-400 transition-colors">
-                  {template.name}
-                </h4>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-750">
-                  {template.category}
+            {/* Upper Content Section */}
+            <div className="p-4 sm:p-5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
+                  {numberTag} / {template.category}
+                </span>
+                <span className="text-[10px] font-mono-tech text-slate-500 uppercase flex items-center gap-1">
+                  <Layers className="w-3 h-3 text-slate-400" />
+                  <span>{boxCount} BOXES</span>
                 </span>
               </div>
 
-              {/* Description */}
-              <p className="text-xs text-zinc-400 leading-relaxed mb-3 line-clamp-2">
+              <h4 className="font-display font-bold text-sm sm:text-base text-white group-hover:text-slate-200 transition-colors mb-2">
+                {template.name}
+              </h4>
+
+              <p className="text-xs text-slate-400 leading-relaxed mb-4 line-clamp-2">
                 {template.description}
               </p>
 
               {/* Schematic Miniature Box Layout */}
-              <div className="relative w-full h-28 bg-zinc-950/80 border border-zinc-800/80 rounded-lg overflow-hidden p-2 mb-3">
+              <div className="relative w-full h-28 bg-[#141517] border border-white/10 rounded-lg overflow-hidden p-2">
                 <div className="relative w-full h-full scale-95">
-                  {template.boxes.slice(0, 8).map((box, idx) => {
+                  {template.boxes.slice(0, 8).map((box, bIdx) => {
                     const minX = (box.x / 1280) * 100;
                     const minY = (box.y / 1500) * 100;
                     const minW = Math.max(10, (box.width / 1280) * 100);
                     const minH = Math.max(12, (box.height / 1500) * 100);
                     return (
                       <div
-                        key={idx}
+                        key={bIdx}
                         style={{
                           left: `${minX}%`,
                           top: `${minY}%`,
@@ -47,7 +53,7 @@ export const HomeTemplateGrid = ({ onSelectTemplate }) => {
                           backgroundColor: box.color,
                           borderColor: box.borderColor,
                         }}
-                        className="absolute border rounded-xs opacity-70 group-hover:opacity-90 transition-opacity"
+                        className="absolute border rounded-xs opacity-70 group-hover:opacity-100 transition-opacity"
                       />
                     );
                   })}
@@ -55,17 +61,14 @@ export const HomeTemplateGrid = ({ onSelectTemplate }) => {
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80">
-              <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 font-mono">
-                <Layers className="w-3 h-3" />
-                <span>{boxCount} Editable Boxes</span>
-              </div>
-
-              <span className="flex items-center gap-1 text-xs font-semibold text-blue-400 group-hover:text-blue-300 group-hover:translate-x-0.5 transition-all">
-                <span>Use Template</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+            {/* Card Info Footer */}
+            <div className="px-4 sm:px-5 py-3.5 bg-[#181a1d] border-t border-white/10 flex items-center justify-between">
+              <span className="text-[11px] font-mono-tech tracking-[0.2em] text-slate-300 group-hover:text-white uppercase transition-colors">
+                LOAD TEMPLATE
               </span>
+              <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </div>
             </div>
           </div>
         );

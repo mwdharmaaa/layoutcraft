@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { Boxes, PlusCircle, LayoutTemplate, Sparkles, ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Plus } from 'lucide-react';
+import { AmbientGlow } from './AmbientGlow';
 import { HomeTemplateGrid } from './HomeTemplateGrid';
 
 export const MainMenuView = ({
@@ -13,128 +14,168 @@ export const MainMenuView = ({
   };
 
   return (
-    <div className="fixed inset-0 overflow-y-auto bg-zinc-950 text-zinc-100 flex flex-col font-sans select-none">
-      {/* Top Navbar */}
-      <header className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-30 px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
-            <Boxes className="w-4 h-4" />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-base tracking-tight text-white">LayoutCraft</span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-750">
-              v2.5
-            </span>
-          </div>
+    <div className="fixed inset-0 overflow-y-auto bg-canvas-texture text-slate-100 flex flex-col font-sans select-none">
+      {/* Background Lighting from project0002 */}
+      <AmbientGlow />
+
+      {/* Primary Navigation Bar (project0002 layout) */}
+      <header className="relative z-20 px-6 sm:px-12 md:px-16 py-6 sm:py-8 flex items-center justify-between pointer-events-auto">
+        {/* Brand Moniker */}
+        <div className="flex items-center gap-3">
+          <span className="font-display text-xl sm:text-2xl font-black tracking-[0.15em] text-white">
+            LAYOUTCRAFT
+          </span>
+          <span className="text-[9px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase px-2 py-0.5 rounded-full border border-white/10 hidden sm:inline">
+            STUDIO 0002
+          </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-zinc-500 font-mono hidden sm:inline">
-            Interactive Visual Architecture
+        {/* Right Navigation / Spec info */}
+        <div className="flex items-center gap-6">
+          <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.25em] text-slate-400 uppercase hidden md:inline">
+            VISUAL ARCHITECTURE // V2.5
           </span>
+          <button
+            onClick={onStartBlank}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-white hover:text-black text-[11px] font-mono-tech tracking-[0.15em] text-slate-200 transition-all cursor-pointer"
+          >
+            <Plus className="w-3 h-3" />
+            <span>BLANK CANVAS</span>
+          </button>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10 flex flex-col gap-12">
-        {/* Hero Section */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-950/50 border border-blue-800/40 text-blue-400 text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Visual Frontend Layout Engine</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
-            Pilih Mode Rancang Tata Letak
-          </h1>
-          <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
-            Mulai dari kanvas kosong untuk kebebasan penuh, atau pilih salah satu template arsitektur responsif yang siap kamu modifikasi langsung.
+      {/* Hero Section (in project0002 moniker style) */}
+      <main className="relative z-10 flex-1 flex flex-col items-center px-6 sm:px-12 pb-24">
+        <section className="min-h-[82vh] w-full flex flex-col items-center justify-center text-center max-w-5xl mx-auto py-12">
+          {/* Intro Tagline */}
+          <p className="text-xs sm:text-sm font-semibold tracking-[0.35em] text-slate-400 uppercase mb-3 sm:mb-4">
+            VISUAL FRONTEND ENGINE
           </p>
-        </div>
 
-        {/* Primary Choice Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Option 1: Bikin Layout Sendiri */}
-          <div
-            onClick={onStartBlank}
-            className="group relative bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 hover:border-blue-500/50 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-5 group-hover:scale-105 transition-transform">
-                <PlusCircle className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-                Bikin Layout Sendiri
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6">
-                Mulai dari kanvas kosong tanpa batas. Tambah kotak dengan mudah, seret posisi, sesuaikan ukuran tiap sisi lewat pegangan interaktif, dan atur grid snap presisi.
-              </p>
+          {/* Hero Display Moniker */}
+          <h1 className="font-display text-6xl sm:text-8xl md:text-9xl lg:text-[10.5rem] font-black tracking-tight text-white leading-none drop-shadow-md transform hover:scale-[1.01] transition-transform duration-300">
+            LAYOUT
+          </h1>
+
+          {/* Right-aligned Subtitle Block (project0002 trademark) */}
+          <div className="w-full flex justify-end max-w-2xl sm:max-w-4xl mt-3 sm:mt-5">
+            <div className="text-right">
+              <span className="block text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.3em] text-slate-300 uppercase">
+                A SPECIAL
+              </span>
+              <span className="block text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.3em] text-slate-400 uppercase">
+                LAYOUT BUILDER
+              </span>
             </div>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onStartBlank();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-md shadow-blue-600/25"
-            >
-              <PlusCircle className="w-4 h-4" />
-              <span>Buka Kanvas Kosong</span>
-            </button>
           </div>
 
-          {/* Option 2: Pake Template */}
-          <div
-            onClick={scrollToTemplates}
-            className="group relative bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-105 transition-transform">
-                <LayoutTemplate className="w-6 h-6" />
-              </div>
-              <h2 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                Pake Template Siap Pakai
-              </h2>
-              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6">
-                Pilih dari 5 tata letak siap pakai: Landing Page, Dashboard, Bento Grid, Editorial, atau Mobile Wireframe. Semua elemen tetap 100% bisa digeser dan diedit.
-              </p>
-            </div>
+          {/* Action Buttons */}
+          <div className="mt-12 sm:mt-16 flex items-center justify-center gap-4 flex-wrap">
+            <button
+              onClick={onStartBlank}
+              className="flex items-center gap-2.5 px-7 py-3 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-[#282c31] hover:border-white text-xs font-mono-tech tracking-[0.2em] text-slate-200 hover:text-white transition-all transform hover:translate-y-0.5 group cursor-pointer shadow-xl shadow-black/40"
+            >
+              <span>CREATE FROM SCRATCH</span>
+              <ArrowRight className="w-3.5 h-3.5 text-white group-hover:translate-x-1 transition-transform" />
+            </button>
 
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                scrollToTemplates();
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700 transition-colors shadow-md"
+              onClick={scrollToTemplates}
+              className="flex items-center gap-2.5 px-7 py-3 rounded-full border border-white/10 bg-transparent hover:bg-white/5 text-xs font-mono-tech tracking-[0.2em] text-slate-400 hover:text-white transition-all transform hover:translate-y-0.5 group cursor-pointer"
             >
-              <ArrowDown className="w-4 h-4 text-emerald-400" />
-              <span>Pilih Dari Template Tersedia</span>
+              <span>EXPLORE TEMPLATES</span>
+              <ArrowDown className="w-3.5 h-3.5 text-white group-hover:translate-y-0.5 transition-transform" />
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Templates Gallery Section */}
-        <section ref={templatesRef} className="pt-4 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-            <div>
-              <h3 className="text-lg font-bold text-zinc-100">
-                Koleksi Template Siap Modifikasi
-              </h3>
-              <p className="text-xs text-zinc-400">
-                Klik template mana pun untuk langsung membukanya di kanvas visual.
-              </p>
+        {/* Mode Selector Triptych (Dual Showcase Cards) */}
+        <section className="w-full max-w-5xl mx-auto py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {/* Card 01: Blank Canvas */}
+            <div
+              onClick={onStartBlank}
+              className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
+                    MODE .01 / SCRATCHPAD
+                  </span>
+                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
+                  Bikin Layout Sendiri
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  Mulai dari kanvas kosong tanpa batas. Tambah kotak bebas, atur ukuran tiap sisi dengan pegangan interaktif, atur grid snap presisi, dan download file HTML mandiri.
+                </p>
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono-tech text-slate-400">
+                <span>EMPTY 1280PX BOARD</span>
+                <span className="text-white group-hover:underline">OPEN CANVAS</span>
+              </div>
             </div>
-            <span className="text-xs font-mono text-zinc-500">
-              5 Template Tersedia
+
+            {/* Card 02: Starter Templates */}
+            <div
+              onClick={scrollToTemplates}
+              className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
+                    MODE .02 / TEMPLATES
+                  </span>
+                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
+                    <ArrowDown className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+
+                <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
+                  Pake Template Siap Pakai
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  Pilih dari arsitektur tata letak siap pakai: SaaS Landing Page, Analytics Dashboard, Bento Grid Portfolio, Editorial Magazine, atau Mobile Wireframe.
+                </p>
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono-tech text-slate-400">
+                <span>5 CURATED STARTERS</span>
+                <span className="text-white group-hover:underline">VIEW GALLERY</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Templates Gallery Section (project0002 portfolio style) */}
+        <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-16 pb-8 space-y-8">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.3em] text-slate-400 uppercase block">
+              COLLECTION // STARTERS
             </span>
+            <h2 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
+              TEMPLATE LAYOUT SIAP PAKAI
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 font-mono-tech tracking-wider uppercase">
+              SEMUA KOTAK DAPAT DIGESER, DIUBAH UKURANNYA, DAN DI-DOWNLOAD
+            </p>
           </div>
 
           <HomeTemplateGrid onSelectTemplate={onSelectTemplate} />
         </section>
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="border-t border-zinc-800/80 py-6 text-center text-xs text-zinc-500">
-        LayoutCraft - Production-Grade Visual Layout Architecture & Standalone HTML Exporter
+      {/* Minimalist Site Footer (project0002 style) */}
+      <footer className="relative z-10 border-t border-white/10 py-8 px-6 text-center text-[10px] sm:text-xs font-mono-tech tracking-[0.25em] text-slate-500 uppercase">
+        LAYOUTCRAFT // VISUAL FRONTEND ARCHITECTURE // YEAR 2026
       </footer>
     </div>
   );
