@@ -1,4 +1,7 @@
+import { useRef } from 'react';
 import { DraggableBox } from './DraggableBox';
+import { useCanvasZoom } from '../hooks/useCanvasZoom';
+import { CanvasZoomControls } from './CanvasZoomControls';
 
 export const BuilderCanvas = ({
   boxes,
@@ -7,12 +10,27 @@ export const BuilderCanvas = ({
   showGrid,
   snapToGrid,
   zoom,
+  onZoomChange,
   onSelectBox,
   onUpdateBox,
   onCommitState,
   onDuplicateBox,
   onDeleteBox,
 }) => {
+  const containerRef = useRef(null);
+  const { zoomIn, zoomOut, resetZoom } = useCanvasZoom({
+    zoom,
+    onZoomChange,
+    containerRef,
+  });
+
+  const maxBoxBottom = boxes.reduce(
+    (max, b) => Math.max(max, (b.y || 0) + (b.height || 0)),
+    0
+  );
+  const canvasHeight = Math.max(4800, maxBoxBottom + 1600);
+  const scale = (zoom || 100) / 100;
+
   const gridStyle = showGrid
     ? {
         backgroundSize: `${gridSize}px ${gridSize}px`,
@@ -25,67 +43,101 @@ export const BuilderCanvas = ({
 
   return (
     <div
+      ref={containerRef}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onSelectBox(null);
         }
       }}
-      className="flex-1 relative overflow-auto p-10 flex items-start justify-center bg-zinc-950 select-none"
+      className="flex-1 relative overflow-auto p-8 sm:p-12 flex items-start justify-center bg-zinc-950 select-none scroll-smooth"
     >
-      {/* Canvas Board Surface */}
+      {/* Sizer Wrapper for Accurate Scaled Scroll Bounds */}
       <div
         style={{
-          transform: `scale(${zoom / 100})`,
-          transformOrigin: 'top center',
-          width: '1280px',
-          minHeight: '860px',
-          ...gridStyle,
+          width: `${1280 * scale}px`,
+          minHeight: `${canvasHeight * scale}px`,
         }}
         onClick={(e) => {
-          // Deselect if clicking on empty canvas surface
           if (e.target === e.currentTarget) {
             onSelectBox(null);
           }
         }}
-        className="relative bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden transition-transform duration-100"
+        className="relative flex flex-col items-center pb-32"
       >
-        {/* Canvas Top Bar Indicator */}
-        <div className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none z-10">
-          <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
-            Grid: {gridSize}px {snapToGrid ? '(Snap On)' : '(Snap Off)'}
-          </span>
-          <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
-            {boxes.length} {boxes.length === 1 ? 'Box' : 'Boxes'}
-          </span>
-        </div>
-
-        {/* Empty Canvas Placeholder */}
-        {boxes.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 pointer-events-none">
-            <p className="text-zinc-500 text-sm font-medium">Canvas is empty</p>
-            <p className="text-zinc-600 text-xs mt-1">
-              Click &quot;+ Add Box&quot; in the top bar to create your first layout block
-            </p>
+        {/* Canvas Board Surface */}
+        <div
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: 'top center',
+            width: '1280px',
+            minHeight: `${canvasHeight}px`,
+            ...gridStyle,
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              onSelectBox(null);
+            }
+          }}
+          className="relative bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden transition-transform duration-75"
+        >
+          {/* Canvas Top Bar Indicator */}
+          <div className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none z-10">
+            <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
+              Grid: {gridSize}px {snapToGrid ? '(Snap On)' : '(Snap Off)'}
+            </span>
+            <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
+              {boxes.length} {boxes.length === 1 ? 'Box' : 'Boxes'}
+            </span>
+            <span className="text-[11px] font-mono text-blue-400/80 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800 hidden sm:inline-block">
+              Canvas: 1280 × {canvasHeight}px
+            </span>
           </div>
-        )}
 
-        {/* Draggable & Resizable Boxes */}
-        {boxes.map((box) => (
-          <DraggableBox
-            key={box.id}
-            box={box}
-            isSelected={selectedBoxId === box.id}
-            zoom={zoom}
-            gridSize={gridSize}
-            snapToGrid={snapToGrid}
-            onSelect={onSelectBox}
-            onUpdateBox={onUpdateBox}
-            onCommitState={onCommitState}
-            onDuplicate={onDuplicateBox}
-            onDelete={onDeleteBox}
-          />
-        ))}
+          {/* Empty Canvas Placeholder */}
+          {boxes.length === 0 && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 pointer-events-none">
+              <p className="text-zinc-500 text-sm font-medium">Canvas is empty</p>
+              <p className="text-zinc-600 text-xs mt-1">
+                Click &quot;+ Add Box&quot; in the top bar to create your first layout block
+              </p>
+            </div>
+          )}
+
+          {/* Draggable & Resizable Boxes */}
+          {boxes.map((box) => (
+            <DraggableBox
+              key={box.id}
+              box={box}
+              isSelected={selectedBoxId === box.id}
+              zoom={zoom}
+              gridSize={gridSize}
+              snapToGrid={snapToGrid}
+              onSelect={onSelectBox}
+              onUpdateBox={onUpdateBox}
+              onCommitState={onCommitState}
+              onDuplicate={onDuplicateBox}
+              onDelete={onDeleteBox}
+            />
+          ))}
+
+          {/* Canvas Bottom Depth Indicator */}
+          <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none opacity-40">
+            <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
+              Canvas Depth: {canvasHeight}px : Scrollable Workspace
+            </span>
+          </div>
+        </div>
       </div>
+
+      {/* Floating Zoom Controls HUD */}
+      {onZoomChange && (
+        <CanvasZoomControls
+          zoom={zoom}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onResetZoom={resetZoom}
+        />
+      )}
     </div>
   );
 };
