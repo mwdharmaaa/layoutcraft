@@ -4,8 +4,12 @@ import { BuilderCanvas } from './BuilderCanvas';
 import { BoxPropertyBar } from './BoxPropertyBar';
 import { BuilderExportModal } from './BuilderExportModal';
 import { boxesToStudioRoot } from '../utils/box_converter';
+import { downloadHtmlLayout } from '../utils/html_exporter';
+import { useToast } from '@/features/toast/hooks/useToast';
+import { ToastNotification } from '@/features/toast/components/ToastNotification';
 
 export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
+  const { toasts, showToast } = useToast();
   const {
     boxes,
     selectedBox,
@@ -38,6 +42,11 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
     onApplyToStudio(rootNode);
   };
 
+  const handleDownloadHtml = () => {
+    downloadHtmlLayout(boxes);
+    showToast('HTML layout downloaded successfully', 'success');
+  };
+
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       {/* Top Header */}
@@ -58,6 +67,7 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
         onAddBox={handleAddBox}
         onClearCanvas={handleClearAll}
         onOpenExport={() => setIsExportOpen(true)}
+        onDownloadHtml={handleDownloadHtml}
         onApplyToStudio={handleApply}
       />
 
@@ -94,6 +104,9 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
         boxes={boxes}
         onApplyToStudio={handleApply}
       />
+
+      {/* Action Feedback Toasts */}
+      <ToastNotification toasts={toasts} />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
   Redo2,
   Trash2,
   Code2,
+  Download,
   Sparkles,
 } from 'lucide-react';
 import { GRID_SIZE_OPTIONS } from '../constants/builder_defaults';
@@ -28,6 +29,7 @@ export const BuilderHeader = ({
   onAddBox,
   onClearCanvas,
   onOpenExport,
+  onDownloadHtml,
   onApplyToStudio,
 }) => {
   return (
@@ -152,6 +154,15 @@ export const BuilderHeader = ({
           title="Clear All Boxes"
         >
           <Trash2 className="w-4 h-4" />
+        </button>
+
+        <button
+          onClick={onDownloadHtml}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-300 hover:text-white bg-blue-950/60 hover:bg-blue-600/80 border border-blue-800/60 transition-colors shadow-xs"
+          title="Download standalone HTML layout file"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span>Download HTML</span>
         </button>
 
         <button
