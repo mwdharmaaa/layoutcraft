@@ -44,19 +44,39 @@ export function useLayoutBuilder() {
     }
   }, [historyIndex, history]);
 
-  const handleAddBox = useCallback((preset = BOX_PRESETS[0]) => {
+  const handleAddBox = useCallback((preset = BOX_PRESETS[0], customCoords = null) => {
     const newId = `box-${Date.now()}`;
-    const offset = (boxes.length * 20) % 200;
-    const rawX = 60 + offset;
-    const rawY = 60 + offset;
+    let rawX;
+    let rawY;
+
+    if (customCoords && typeof customCoords.x === 'number' && typeof customCoords.y === 'number') {
+      rawX = customCoords.x;
+      rawY = customCoords.y;
+    } else {
+      const selected = boxes.find((b) => b.id === selectedBoxId);
+      if (selected) {
+        rawX = selected.x;
+        rawY = selected.y + selected.height + 20;
+      } else if (boxes.length > 0) {
+        const lowest = boxes.reduce(
+          (prev, curr) => (curr.y + curr.height > prev.y + prev.height ? curr : prev),
+          boxes[0]
+        );
+        rawX = lowest.x;
+        rawY = lowest.y + lowest.height + 20;
+      } else {
+        rawX = 40;
+        rawY = 40;
+      }
+    }
 
     const newBox = {
       id: newId,
       name: `${preset.name} ${boxes.length + 1}`,
-      x: snapToGrid ? snapToGridValue(rawX, gridSize) : rawX,
-      y: snapToGrid ? snapToGridValue(rawY, gridSize) : rawY,
-      width: preset.width || 280,
-      height: preset.height || 180,
+      x: snapToGrid ? snapToGridValue(rawX, gridSize) : Math.round(rawX),
+      y: snapToGrid ? snapToGridValue(rawY, gridSize) : Math.round(rawY),
+      width: preset.width || 360,
+      height: preset.height || 240,
       color: preset.color || '#18181b',
       borderColor: preset.borderColor || '#27272a',
       textColor: preset.textColor || '#f4f4f5',
@@ -69,7 +89,7 @@ export function useLayoutBuilder() {
     setBoxes(nextBoxes);
     setSelectedBoxId(newId);
     commitToHistory(nextBoxes);
-  }, [boxes, snapToGrid, gridSize, commitToHistory]);
+  }, [boxes, selectedBoxId, snapToGrid, gridSize, commitToHistory]);
 
   const handleUpdateBox = useCallback((id, patch, recordHistory = true) => {
     setBoxes((prev) => {
