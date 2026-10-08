@@ -67,7 +67,7 @@ export const BuilderCanvas = ({
             onSelectBox(null);
           }
         }}
-        className="relative flex flex-col items-center pb-32 m-auto shrink-0"
+        className="relative flex flex-col items-center pb-32 mx-auto my-0 shrink-0"
       >
         {/* Canvas Board Surface */}
         <div

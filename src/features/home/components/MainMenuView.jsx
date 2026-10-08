@@ -13,7 +13,7 @@ export const MainMenuView = ({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans select-none overflow-y-auto">
+    <div className="fixed inset-0 overflow-y-auto bg-zinc-950 text-zinc-100 flex flex-col font-sans select-none">
       {/* Top Navbar */}
       <header className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-30 px-6 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
