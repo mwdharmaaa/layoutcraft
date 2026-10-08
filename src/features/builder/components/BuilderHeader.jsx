@@ -125,15 +125,25 @@ export const BuilderHeader = ({
         {/* Zoom */}
         <div className="flex items-center gap-1 bg-zinc-950 px-2 py-1 rounded-lg border border-zinc-800 text-xs">
           <button
-            onClick={() => onZoomChange(Math.max(50, zoom - 10))}
-            className="text-zinc-400 hover:text-zinc-200"
+            onClick={() => onZoomChange(Math.max(25, zoom - 10))}
+            disabled={zoom <= 25}
+            className="text-zinc-400 hover:text-zinc-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+            title="Zoom Out"
           >
             -
           </button>
-          <span className="w-8 text-center font-mono text-[11px] text-zinc-300">{zoom}%</span>
           <button
-            onClick={() => onZoomChange(Math.min(150, zoom + 10))}
-            className="text-zinc-400 hover:text-zinc-200"
+            onClick={() => onZoomChange(100)}
+            className="w-10 text-center font-mono text-[11px] text-zinc-300 hover:text-white cursor-pointer"
+            title="Click to reset zoom to 100%"
+          >
+            {zoom}%
+          </button>
+          <button
+            onClick={() => onZoomChange(Math.min(250, zoom + 10))}
+            disabled={zoom >= 250}
+            className="text-zinc-400 hover:text-zinc-200 disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+            title="Zoom In"
           >
             +
           </button>
