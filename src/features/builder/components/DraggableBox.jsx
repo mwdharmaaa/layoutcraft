@@ -40,6 +40,10 @@ export const DraggableBox = ({
   return (
     <div
       id={`builder-box-${box.id}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(box.id);
+      }}
       onPointerDown={(e) => {
         onSelect(box.id);
         handlePointerDown(e);

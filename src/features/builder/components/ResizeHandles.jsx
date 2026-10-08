@@ -91,6 +91,7 @@ export const ResizeHandles = ({
         return (
           <div
             key={edge.dir}
+            onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => onStartResize(edge.dir, e)}
             className={edge.containerClass}
             title={edge.label}
@@ -145,6 +146,7 @@ export const ResizeHandles = ({
         return (
           <div
             key={corner.dir}
+            onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => onStartResize(corner.dir, e)}
             className={`absolute ${corner.pos} ${corner.cursor} w-5 h-5 z-40 flex items-center justify-center group/corner`}
           >

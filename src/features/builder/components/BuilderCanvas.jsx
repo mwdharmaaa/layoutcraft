@@ -25,7 +25,11 @@ export const BuilderCanvas = ({
 
   return (
     <div
-      onClick={() => onSelectBox(null)}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onSelectBox(null);
+        }
+      }}
       className="flex-1 relative overflow-auto p-10 flex items-start justify-center bg-zinc-950 select-none"
     >
       {/* Canvas Board Surface */}
