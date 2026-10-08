@@ -8,11 +8,13 @@ import {
   Trash2,
   Code2,
   Download,
+  ArrowLeft,
 } from 'lucide-react';
 import { GRID_SIZE_OPTIONS } from '../constants/builder_defaults';
 import { AddBoxDropdown } from './AddBoxDropdown';
 
 export const BuilderHeader = ({
+  onBackToMenu,
   gridSize,
   onChangeGridSize,
   showGrid,
@@ -35,6 +37,18 @@ export const BuilderHeader = ({
     <header className="h-13 bg-zinc-900 border-b border-zinc-800 px-4 flex items-center justify-between select-none">
       {/* Left: Brand & Main Actions */}
       <div className="flex items-center gap-3">
+        {/* Return to Menu Button */}
+        {onBackToMenu && (
+          <button
+            onClick={onBackToMenu}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-750 transition-colors shadow-xs"
+            title="Kembali ke Menu Utama"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Menu</span>
+          </button>
+        )}
+
         {/* Brand Logo */}
         <div className="flex items-center gap-2 pr-1">
           <div className="w-7 h-7 rounded-lg bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400">

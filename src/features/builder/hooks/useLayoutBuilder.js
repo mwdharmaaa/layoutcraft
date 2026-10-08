@@ -7,9 +7,10 @@ import {
 } from '../constants/builder_defaults';
 import { snapToGridValue } from '../utils/snap_helpers';
 
-export function useLayoutBuilder() {
-  const [boxes, setBoxes] = useState(INITIAL_BUILDER_BOXES);
-  const [selectedBoxId, setSelectedBoxId] = useState('box-1');
+export function useLayoutBuilder(initialBoxes) {
+  const startBoxes = initialBoxes !== undefined ? initialBoxes : INITIAL_BUILDER_BOXES;
+  const [boxes, setBoxes] = useState(startBoxes);
+  const [selectedBoxId, setSelectedBoxId] = useState(startBoxes[0]?.id || null);
   const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
   const [showGrid, setShowGrid] = useState(true);
   const [snapToGrid, setSnapToGrid] = useState(true);
@@ -18,7 +19,7 @@ export function useLayoutBuilder() {
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
 
   // History stack
-  const [history, setHistory] = useState([INITIAL_BUILDER_BOXES]);
+  const [history, setHistory] = useState([startBoxes]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const commitToHistory = useCallback((newBoxes) => {

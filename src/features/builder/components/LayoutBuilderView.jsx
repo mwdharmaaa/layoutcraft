@@ -8,8 +8,9 @@ import { downloadHtmlLayout } from '../utils/html_exporter';
 import { useToast } from '@/features/toast/hooks/useToast';
 import { ToastNotification } from '@/features/toast/components/ToastNotification';
 
-export const LayoutBuilderView = () => {
+export const LayoutBuilderView = ({ onBackToMenu, initialTemplate, initialBoxes }) => {
   const { toasts, showToast } = useToast();
+  const effectiveInitialBoxes = initialTemplate?.boxes || initialBoxes;
   const {
     boxes,
     selectedBox,
@@ -38,7 +39,7 @@ export const LayoutBuilderView = () => {
     handleDuplicateBox,
     handleClearAll,
     handleLoadTemplate,
-  } = useLayoutBuilder();
+  } = useLayoutBuilder(effectiveInitialBoxes);
 
   const handleDownloadHtml = () => {
     downloadHtmlLayout(boxes);
@@ -49,6 +50,7 @@ export const LayoutBuilderView = () => {
     <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       {/* Top Header */}
       <BuilderHeader
+        onBackToMenu={onBackToMenu}
         gridSize={gridSize}
         onChangeGridSize={setGridSize}
         showGrid={showGrid}
