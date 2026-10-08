@@ -3,6 +3,7 @@ import {
   DEFAULT_GRID_SIZE,
   BOX_PRESETS,
   INITIAL_BUILDER_BOXES,
+  DEFAULT_RESIZABLE_SIDES,
 } from '../constants/builder_defaults';
 import { snapToGridValue } from '../utils/snap_helpers';
 
@@ -61,6 +62,7 @@ export function useLayoutBuilder() {
       textColor: preset.textColor || '#f4f4f5',
       borderRadius: 8,
       zIndex: boxes.length + 1,
+      resizableSides: preset.resizableSides ? { ...preset.resizableSides } : { ...DEFAULT_RESIZABLE_SIDES },
     };
 
     const nextBoxes = [...boxes, newBox];
@@ -101,6 +103,7 @@ export function useLayoutBuilder() {
       x: target.x + 20,
       y: target.y + 20,
       zIndex: boxes.length + 1,
+      resizableSides: target.resizableSides ? { ...target.resizableSides } : { ...DEFAULT_RESIZABLE_SIDES },
     };
     const nextBoxes = [...boxes, dupBox];
     setBoxes(nextBoxes);
