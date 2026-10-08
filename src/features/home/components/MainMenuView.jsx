@@ -25,9 +25,6 @@ export const MainMenuView = ({
           <span className="font-display text-xl sm:text-2xl font-black tracking-[0.15em] text-white">
             LAYOUTCRAFT
           </span>
-          <span className="text-[9px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase px-2 py-0.5 rounded-full border border-white/10 hidden sm:inline">
-            STUDIO 0002
-          </span>
         </div>
 
         {/* Right Navigation / Spec info */}
