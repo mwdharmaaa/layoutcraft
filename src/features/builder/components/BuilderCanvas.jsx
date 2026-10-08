@@ -32,12 +32,16 @@ export const BuilderCanvas = ({
   const canvasHeight = Math.max(4800, maxBoxBottom + 1600);
   const scale = (zoom || 100) / 100;
 
+  const scaledGridSize = gridSize / scale;
+  const scaledLineWidth = (1 / scale).toFixed(3);
+
   const gridStyle = showGrid
     ? {
-        backgroundSize: `${gridSize}px ${gridSize}px`,
+        backgroundSize: `${scaledGridSize}px ${scaledGridSize}px`,
+        backgroundPosition: 'center top',
         backgroundImage: `
-          linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px)
+          linear-gradient(to right, rgba(255, 255, 255, 0.07) ${scaledLineWidth}px, transparent ${scaledLineWidth}px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.07) ${scaledLineWidth}px, transparent ${scaledLineWidth}px)
         `,
       }
     : {};
@@ -90,7 +94,13 @@ export const BuilderCanvas = ({
           className="relative bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden transition-transform duration-75"
         >
           {/* Canvas Top Bar Indicator */}
-          <div className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none z-10">
+          <div
+            style={{
+              transform: `scale(${1 / scale})`,
+              transformOrigin: 'top left',
+            }}
+            className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none z-10"
+          >
             <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
               Grid: {gridSize}px {snapToGrid ? '(Snap On)' : '(Snap Off)'}
             </span>
@@ -145,7 +155,13 @@ export const BuilderCanvas = ({
           ))}
 
           {/* Canvas Bottom Depth Indicator */}
-          <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none opacity-40">
+          <div
+            style={{
+              transform: `scale(${1 / scale})`,
+              transformOrigin: 'bottom center',
+            }}
+            className="absolute bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none opacity-40"
+          >
             <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
               Canvas Depth: {canvasHeight}px : Scrollable Workspace
             </span>
