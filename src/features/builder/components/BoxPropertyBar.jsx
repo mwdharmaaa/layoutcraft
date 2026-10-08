@@ -1,6 +1,7 @@
 import {
   BOX_COLOR_PALETTES,
 } from '../constants/builder_defaults';
+import { ResizableSidesControl } from './ResizableSidesControl';
 import { Sliders, Layers, Trash2, Copy } from 'lucide-react';
 
 export const BoxPropertyBar = ({
@@ -80,6 +81,12 @@ export const BoxPropertyBar = ({
           </div>
         </div>
       </div>
+
+      {/* Resizable Edges Configuration */}
+      <ResizableSidesControl
+        selectedBox={selectedBox}
+        onUpdateBox={onUpdateBox}
+      />
 
       {/* Color Preset Palette */}
       <div>
