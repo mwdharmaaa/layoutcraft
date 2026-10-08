@@ -15,6 +15,7 @@ export function useLayoutBuilder() {
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [zoom, setZoom] = useState(100);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
 
   // History stack
   const [history, setHistory] = useState([INITIAL_BUILDER_BOXES]);
@@ -137,6 +138,18 @@ export function useLayoutBuilder() {
     commitToHistory([]);
   }, [commitToHistory]);
 
+  const handleLoadTemplate = useCallback((template) => {
+    if (!template?.boxes) return;
+    const cloned = template.boxes.map((b, idx) => ({
+      ...b,
+      id: `box-tpl-${Date.now()}-${idx}`,
+      resizableSides: b.resizableSides ? { ...b.resizableSides } : { ...DEFAULT_RESIZABLE_SIDES },
+    }));
+    setBoxes(cloned);
+    setSelectedBoxId(cloned[0]?.id || null);
+    commitToHistory(cloned);
+  }, [commitToHistory]);
+
   const selectedBox = boxes.find((b) => b.id === selectedBoxId) || null;
 
   return {
@@ -148,6 +161,7 @@ export function useLayoutBuilder() {
     snapToGrid,
     zoom,
     isExportOpen,
+    isTemplatesOpen,
     canUndo: historyIndex > 0,
     canRedo: historyIndex < history.length - 1,
     setSelectedBoxId,
@@ -156,6 +170,7 @@ export function useLayoutBuilder() {
     setSnapToGrid,
     setZoom,
     setIsExportOpen,
+    setIsTemplatesOpen,
     handleUndo,
     handleRedo,
     handleAddBox,
@@ -164,5 +179,6 @@ export function useLayoutBuilder() {
     handleDeleteBox,
     handleDuplicateBox,
     handleClearAll,
+    handleLoadTemplate,
   };
 }
