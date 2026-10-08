@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Copy, Check, Download, Sparkles } from 'lucide-react';
+import { X, Copy, Check, Download } from 'lucide-react';
 import {
   boxesToTailwindCode,
 } from '../utils/box_converter';
@@ -13,7 +13,6 @@ export const BuilderExportModal = ({
   isOpen,
   onClose,
   boxes,
-  onApplyToStudio,
 }) => {
   const [tab, setTab] = useState('html');
   const [htmlMode, setHtmlMode] = useState('document');
@@ -121,13 +120,10 @@ export const BuilderExportModal = ({
 
         {/* Modal Footer */}
         <div className="p-4 border-t border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-          <button
-            onClick={onApplyToStudio}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Apply to Studio</span>
-          </button>
+          <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Ready for production</span>
+          </div>
 
           <div className="flex items-center gap-2">
             <button

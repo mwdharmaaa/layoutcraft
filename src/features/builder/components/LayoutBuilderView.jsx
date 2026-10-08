@@ -3,12 +3,12 @@ import { BuilderHeader } from './BuilderHeader';
 import { BuilderCanvas } from './BuilderCanvas';
 import { BoxPropertyBar } from './BoxPropertyBar';
 import { BuilderExportModal } from './BuilderExportModal';
-import { boxesToStudioRoot } from '../utils/box_converter';
+import { BuilderTemplatesModal } from './BuilderTemplatesModal';
 import { downloadHtmlLayout } from '../utils/html_exporter';
 import { useToast } from '@/features/toast/hooks/useToast';
 import { ToastNotification } from '@/features/toast/components/ToastNotification';
 
-export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
+export const LayoutBuilderView = () => {
   const { toasts, showToast } = useToast();
   const {
     boxes,
@@ -19,6 +19,7 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
     snapToGrid,
     zoom,
     isExportOpen,
+    isTemplatesOpen,
     canUndo,
     canRedo,
     setSelectedBoxId,
@@ -27,6 +28,7 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
     setSnapToGrid,
     setZoom,
     setIsExportOpen,
+    setIsTemplatesOpen,
     handleUndo,
     handleRedo,
     handleAddBox,
@@ -35,12 +37,8 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
     handleDeleteBox,
     handleDuplicateBox,
     handleClearAll,
+    handleLoadTemplate,
   } = useLayoutBuilder();
-
-  const handleApply = () => {
-    const rootNode = boxesToStudioRoot(boxes);
-    onApplyToStudio(rootNode);
-  };
 
   const handleDownloadHtml = () => {
     downloadHtmlLayout(boxes);
@@ -51,7 +49,6 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
     <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       {/* Top Header */}
       <BuilderHeader
-        onBack={onBack}
         gridSize={gridSize}
         onChangeGridSize={setGridSize}
         showGrid={showGrid}
@@ -65,10 +62,10 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
         onUndo={handleUndo}
         onRedo={handleRedo}
         onAddBox={handleAddBox}
+        onOpenTemplates={() => setIsTemplatesOpen(true)}
         onClearCanvas={handleClearAll}
         onOpenExport={() => setIsExportOpen(true)}
         onDownloadHtml={handleDownloadHtml}
-        onApplyToStudio={handleApply}
       />
 
       {/* Main Builder Workspace */}
@@ -102,7 +99,16 @@ export const LayoutBuilderView = ({ onBack, onApplyToStudio }) => {
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         boxes={boxes}
-        onApplyToStudio={handleApply}
+      />
+
+      {/* Templates Modal */}
+      <BuilderTemplatesModal
+        isOpen={isTemplatesOpen}
+        onClose={() => setIsTemplatesOpen(false)}
+        onSelectTemplate={(template) => {
+          handleLoadTemplate(template);
+          showToast(`Loaded "${template.name}" template`, 'success');
+        }}
       />
 
       {/* Action Feedback Toasts */}

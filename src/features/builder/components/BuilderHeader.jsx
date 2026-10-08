@@ -1,5 +1,6 @@
 import {
-  ArrowLeft,
+  Boxes,
+  LayoutTemplate,
   Grid,
   Magnet,
   Undo2,
@@ -7,13 +8,11 @@ import {
   Trash2,
   Code2,
   Download,
-  Sparkles,
 } from 'lucide-react';
 import { GRID_SIZE_OPTIONS } from '../constants/builder_defaults';
 import { AddBoxDropdown } from './AddBoxDropdown';
 
 export const BuilderHeader = ({
-  onBack,
   gridSize,
   onChangeGridSize,
   showGrid,
@@ -27,28 +26,42 @@ export const BuilderHeader = ({
   onUndo,
   onRedo,
   onAddBox,
+  onOpenTemplates,
   onClearCanvas,
   onOpenExport,
   onDownloadHtml,
-  onApplyToStudio,
 }) => {
   return (
     <header className="h-13 bg-zinc-900 border-b border-zinc-800 px-4 flex items-center justify-between select-none">
-      {/* Left: Back to Studio & Add Box */}
+      {/* Left: Brand & Main Actions */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-800 transition-colors"
-          title="Return to visual studio"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Studio</span>
-        </button>
+        {/* Brand Logo */}
+        <div className="flex items-center gap-2 pr-1">
+          <div className="w-7 h-7 rounded-lg bg-blue-600/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+            <Boxes className="w-4 h-4" />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-sm text-zinc-100 tracking-tight">LayoutCraft</span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-750">
+              Builder
+            </span>
+          </div>
+        </div>
 
         <div className="h-4 w-[1px] bg-zinc-800" />
 
         {/* Add Box Dropdown with Presets */}
         <AddBoxDropdown onAddBox={onAddBox} />
+
+        {/* Layout Templates Modal Trigger */}
+        <button
+          onClick={onOpenTemplates}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-750 transition-colors shadow-xs"
+          title="Browse & load editable layout templates"
+        >
+          <LayoutTemplate className="w-3.5 h-3.5 text-blue-400" />
+          <span>Templates</span>
+        </button>
 
         {/* Undo / Redo */}
         <div className="flex items-center gap-1">
@@ -171,15 +184,6 @@ export const BuilderHeader = ({
         >
           <Code2 className="w-3.5 h-3.5" />
           <span>Export Code</span>
-        </button>
-
-        <button
-          onClick={onApplyToStudio}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm shadow-emerald-500/25"
-          title="Convert this layout into structured studio blocks"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Apply to Studio</span>
         </button>
       </div>
     </header>
