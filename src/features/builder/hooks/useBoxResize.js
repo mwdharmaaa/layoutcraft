@@ -22,14 +22,17 @@ export function useBoxResize({
     onUpdateBox,
     onResizeEnd,
   });
-  paramsRef.current = {
-    box,
-    zoom,
-    gridSize,
-    snapToGrid,
-    onUpdateBox,
-    onResizeEnd,
-  };
+
+  useEffect(() => {
+    paramsRef.current = {
+      box,
+      zoom,
+      gridSize,
+      snapToGrid,
+      onUpdateBox,
+      onResizeEnd,
+    };
+  });
 
   const startResize = useCallback((direction, e) => {
     e.stopPropagation();
