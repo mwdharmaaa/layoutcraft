@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  Plus,
   Grid,
   Magnet,
   Undo2,
@@ -9,7 +8,8 @@ import {
   Code2,
   Sparkles,
 } from 'lucide-react';
-import { GRID_SIZE_OPTIONS, BOX_PRESETS } from '../constants/builder_defaults';
+import { GRID_SIZE_OPTIONS } from '../constants/builder_defaults';
+import { AddBoxDropdown } from './AddBoxDropdown';
 
 export const BuilderHeader = ({
   onBack,
@@ -45,14 +45,8 @@ export const BuilderHeader = ({
 
         <div className="h-4 w-[1px] bg-zinc-800" />
 
-        {/* Add Box Button */}
-        <button
-          onClick={() => onAddBox(BOX_PRESETS[0])}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-sm shadow-blue-500/25"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add Box</span>
-        </button>
+        {/* Add Box Dropdown with Presets */}
+        <AddBoxDropdown onAddBox={onAddBox} />
 
         {/* Undo / Redo */}
         <div className="flex items-center gap-1">
