@@ -67,32 +67,10 @@ ${lines.join('\n\n')}
 </div>`;
 }
 
-export function boxesToHtmlCode(boxes) {
-  const sorted = [...boxes].sort((a, b) => (a.zIndex || 1) - (b.zIndex || 1));
-  const items = sorted.map((b) => {
-    return `  <div class="box" style="left:${b.x}px; top:${b.y}px; width:${b.width}px; height:${b.height}px; background-color:${b.color}; border:1px solid ${b.borderColor}; border-radius:${b.borderRadius || 8}px; color:${b.textColor};">
-    <span>${b.name}</span>
-  </div>`;
-  }).join('\n');
+import { generateStandaloneHtml, generateHtmlSnippet } from './html_exporter';
 
-  return `<div class="layout-container">
-${items}
-</div>
+export { generateStandaloneHtml, generateHtmlSnippet };
 
-<style>
-.layout-container {
-  position: relative;
-  width: 100%;
-  min-height: 800px;
-  background: #09090b;
-}
-.box {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: sans-serif;
-  box-sizing: border-box;
-}
-</style>`;
+export function boxesToHtmlCode(boxes, isStandalone = true) {
+  return isStandalone ? generateStandaloneHtml(boxes) : generateHtmlSnippet(boxes);
 }
