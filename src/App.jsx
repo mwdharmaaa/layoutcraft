@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { StudioHeader } from '@/features/toolbar/components/StudioHeader';
 import { StudioSidebar } from '@/features/palette/components/StudioSidebar';
 import { CanvasArtboard } from '@/features/canvas/components/CanvasArtboard';
@@ -6,8 +7,11 @@ import { ExportModal } from '@/features/export/components/ExportModal';
 import { ShortcutsModal } from '@/features/shortcuts/components/ShortcutsModal';
 import { ToastNotification } from '@/features/toast/components/ToastNotification';
 import { useStudioState } from '@/features/canvas/hooks/useStudioState';
+import { LayoutBuilderView } from '@/features/builder/components/LayoutBuilderView';
 
 export default function App() {
+  const [viewMode, setViewMode] = useState('studio');
+
   const {
     rootNode,
     selectedId,
@@ -50,6 +54,18 @@ export default function App() {
     handleClearCanvas,
   } = useStudioState();
 
+  if (viewMode === 'builder') {
+    return (
+      <LayoutBuilderView
+        onBack={() => setViewMode('studio')}
+        onApplyToStudio={(newRoot) => {
+          handleImportLayout(newRoot);
+          setViewMode('studio');
+        }}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
       {/* Studio Top Navigation Bar */}
@@ -69,6 +85,7 @@ export default function App() {
         onOpenExport={() => setIsExportOpen(true)}
         onClearCanvas={handleClearCanvas}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onOpenMakeLayout={() => setViewMode('builder')}
       />
 
       {/* Main Workspace Workspace Dock */}
@@ -85,6 +102,7 @@ export default function App() {
             onToggleVisibility={handleToggleVisibility}
             onDeleteNode={handleDeleteNode}
             onSelectTemplate={handleSelectTemplate}
+            onOpenMakeLayout={() => setViewMode('builder')}
           />
         )}
 

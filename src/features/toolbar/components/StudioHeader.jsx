@@ -14,6 +14,7 @@ import {
   Trash2,
   Layout,
   Keyboard,
+  PlusSquare,
 } from 'lucide-react';
 
 export const StudioHeader = ({
@@ -32,6 +33,7 @@ export const StudioHeader = ({
   onOpenExport,
   onClearCanvas,
   onOpenShortcuts,
+  onOpenMakeLayout,
 }) => {
   return (
     <header className="h-13 bg-zinc-900 border-b border-zinc-800 px-4 flex items-center justify-between select-none">
@@ -161,6 +163,15 @@ export const StudioHeader = ({
         >
           {isPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
           <span>{isPreview ? 'Edit Mode' : 'Live Preview'}</span>
+        </button>
+
+        <button
+          onClick={onOpenMakeLayout}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-sm shadow-indigo-500/25"
+          title="Create a freeform layout with draggable and resizable boxes"
+        >
+          <PlusSquare className="w-3.5 h-3.5" />
+          <span>Make Layout</span>
         </button>
 
         <button

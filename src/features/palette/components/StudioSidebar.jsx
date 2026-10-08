@@ -13,6 +13,7 @@ export const StudioSidebar = ({
   onToggleVisibility,
   onDeleteNode,
   onSelectTemplate,
+  onOpenMakeLayout,
 }) => {
   const tabs = [
     { id: 'components', label: 'Blocks', icon: PlusSquare },
@@ -45,7 +46,12 @@ export const StudioSidebar = ({
 
       {/* Tab Panels */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'components' && <ComponentPalette onInsertNode={onInsertNode} />}
+        {activeTab === 'components' && (
+          <ComponentPalette
+            onInsertNode={onInsertNode}
+            onOpenMakeLayout={onOpenMakeLayout}
+          />
+        )}
         {activeTab === 'layers' && (
           <LayersTree
             node={rootNode}
