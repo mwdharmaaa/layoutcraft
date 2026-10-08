@@ -1,7 +1,7 @@
 import { useBoxDrag } from '../hooks/useBoxDrag';
 import { useBoxResize } from '../hooks/useBoxResize';
 import { ResizeHandles } from './ResizeHandles';
-import { Copy, Trash2, Move } from 'lucide-react';
+import { Copy, Trash2, Move, Plus } from 'lucide-react';
 import { DEFAULT_RESIZABLE_SIDES } from '../constants/builder_defaults';
 
 export const DraggableBox = ({
@@ -15,6 +15,7 @@ export const DraggableBox = ({
   onCommitState,
   onDuplicate,
   onDelete,
+  onAddBelow,
 }) => {
   const { isDragging, handlePointerDown } = useBoxDrag({
     box,
@@ -80,6 +81,16 @@ export const DraggableBox = ({
         {/* Action Buttons on Box when Selected */}
         {isSelected && (
           <div className="flex items-center gap-1 pointer-events-auto bg-zinc-900/90 backdrop-blur-xs px-1.5 py-0.5 rounded border border-zinc-700">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddBelow?.(box);
+              }}
+              className="p-1 hover:text-emerald-400 text-zinc-400 transition-colors cursor-pointer"
+              title="Add Box Below"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();

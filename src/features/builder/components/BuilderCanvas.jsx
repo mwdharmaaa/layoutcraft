@@ -11,6 +11,7 @@ export const BuilderCanvas = ({
   snapToGrid,
   zoom,
   onZoomChange,
+  onAddBox,
   onSelectBox,
   onUpdateBox,
   onCommitState,
@@ -78,6 +79,14 @@ export const BuilderCanvas = ({
               onSelectBox(null);
             }
           }}
+          onDoubleClick={(e) => {
+            if (e.target === e.currentTarget && onAddBox) {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const clickX = (e.clientX - rect.left) / scale;
+              const clickY = (e.clientY - rect.top) / scale;
+              onAddBox(undefined, { x: Math.max(0, clickX - 100), y: Math.max(0, clickY - 40) });
+            }
+          }}
           className="relative bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden transition-transform duration-75"
         >
           {/* Canvas Top Bar Indicator */}
@@ -95,11 +104,20 @@ export const BuilderCanvas = ({
 
           {/* Empty Canvas Placeholder */}
           {boxes.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 pointer-events-none">
-              <p className="text-zinc-500 text-sm font-medium">Canvas is empty</p>
-              <p className="text-zinc-600 text-xs mt-1">
-                Click &quot;+ Add Box&quot; in the top bar to create your first layout block
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 select-none">
+              <p className="text-zinc-400 text-sm font-medium">Canvas is ready</p>
+              <p className="text-zinc-600 text-xs mt-1 mb-4">
+                Click button below or double-click anywhere to place your first box
               </p>
+              {onAddBox && (
+                <button
+                  type="button"
+                  onClick={() => onAddBox()}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+                >
+                  + Add First Box
+                </button>
+              )}
             </div>
           )}
 
@@ -117,6 +135,12 @@ export const BuilderCanvas = ({
               onCommitState={onCommitState}
               onDuplicate={onDuplicateBox}
               onDelete={onDeleteBox}
+              onAddBelow={(targetBox) =>
+                onAddBox?.(undefined, {
+                  x: targetBox.x,
+                  y: targetBox.y + targetBox.height + 20,
+                })
+              }
             />
           ))}
 
