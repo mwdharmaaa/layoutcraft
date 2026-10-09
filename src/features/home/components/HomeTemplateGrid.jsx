@@ -4,9 +4,8 @@ import { BUILDER_TEMPLATES } from '@/features/builder/constants/builder_template
 export const HomeTemplateGrid = ({ onSelectTemplate }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {BUILDER_TEMPLATES.map((template, idx) => {
+      {BUILDER_TEMPLATES.map((template) => {
         const boxCount = template.boxes.length;
-        const numberTag = String(idx + 1).padStart(2, '0');
 
         return (
           <div
@@ -16,19 +15,15 @@ export const HomeTemplateGrid = ({ onSelectTemplate }) => {
           >
             {/* Upper Content Section */}
             <div className="p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
-                  {numberTag} / {template.category}
-                </span>
-                <span className="text-[10px] font-mono-tech text-slate-500 uppercase flex items-center gap-1">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h4 className="font-display font-bold text-sm sm:text-base text-white group-hover:text-slate-200 transition-colors leading-tight">
+                  {template.name}
+                </h4>
+                <span className="text-[10px] font-mono-tech text-slate-400 uppercase flex items-center gap-1 shrink-0 mt-0.5">
                   <Layers className="w-3 h-3 text-slate-400" />
                   <span>{boxCount} BOXES</span>
                 </span>
               </div>
-
-              <h4 className="font-display font-bold text-sm sm:text-base text-white group-hover:text-slate-200 transition-colors mb-2">
-                {template.name}
-              </h4>
 
               <p className="text-xs text-slate-400 leading-relaxed mb-4 line-clamp-2">
                 {template.description}

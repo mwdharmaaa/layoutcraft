@@ -41,7 +41,7 @@ export const MainMenuView = ({
 
       {/* Hero Section (in project0002 moniker style) */}
       <main className="relative z-10 flex-1 flex flex-col items-center px-6 sm:px-12 pb-24">
-        <section className="min-h-[82vh] w-full flex flex-col items-center justify-center text-center max-w-5xl mx-auto py-12">
+        <section className="min-h-[72vh] w-full flex flex-col items-center justify-center text-center max-w-5xl mx-auto pt-4 pb-8">
           {/* Intro Tagline */}
           <p className="text-xs sm:text-sm font-semibold tracking-[0.35em] text-slate-400 uppercase mb-3 sm:mb-4">
             VISUAL FRONTEND ENGINE
@@ -65,7 +65,7 @@ export const MainMenuView = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-4 w-full">
+          <div className="mt-8 sm:mt-12 flex flex-col items-center justify-center gap-4 w-full">
             {/* Primary Spotlight Create Button */}
             <div className="relative group">
               <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-white/20 via-white/40 to-white/20 opacity-70 blur-md group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
@@ -98,15 +98,14 @@ export const MainMenuView = ({
               className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
             >
               <div>
-                <div className="flex items-center justify-end mb-4">
-                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h3 className="font-display font-bold text-xl sm:text-2xl text-white group-hover:text-slate-200 transition-colors">
+                    Create Custom Layout
+                  </h3>
+                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all shrink-0 mt-0.5">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
-
-                <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
-                  Create Custom Layout
-                </h3>
 
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
                   Start with an unconstrained blank canvas. Place freeform boxes, adjust dimensions with interactive handles, snap to precision grid, and export standalone HTML.
@@ -125,15 +124,14 @@ export const MainMenuView = ({
               className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
             >
               <div>
-                <div className="flex items-center justify-end mb-4">
-                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h3 className="font-display font-bold text-xl sm:text-2xl text-white group-hover:text-slate-200 transition-colors">
+                    Use Curated Templates
+                  </h3>
+                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all shrink-0 mt-0.5">
                     <ArrowDown className="w-3.5 h-3.5" />
                   </div>
                 </div>
-
-                <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
-                  Use Curated Templates
-                </h3>
 
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
                   Choose from production-ready layout architectures: SaaS Landing Page, Analytics Dashboard, Bento Grid Portfolio, Editorial Magazine, or Mobile Wireframe.
@@ -149,7 +147,7 @@ export const MainMenuView = ({
         </section>
 
         {/* Templates Gallery Section (project0002 portfolio style) */}
-        <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-16 pb-8 space-y-8">
+        <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-10 pb-8 space-y-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h2 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
               PRODUCTION-READY LAYOUT TEMPLATES
