@@ -1,5 +1,4 @@
 import {
-  Boxes,
   LayoutTemplate,
   Grid,
   Magnet,
