@@ -108,11 +108,11 @@ export const MainMenuView = ({
                 </div>
 
                 <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
-                  Bikin Layout Sendiri
+                  Create Custom Layout
                 </h3>
 
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Mulai dari kanvas kosong tanpa batas. Tambah kotak bebas, atur ukuran tiap sisi dengan pegangan interaktif, atur grid snap presisi, dan download file HTML mandiri.
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
+                  Start with an unconstrained blank canvas. Place freeform boxes, adjust dimensions with interactive handles, snap to precision grid, and export standalone HTML.
                 </p>
               </div>
 
@@ -138,11 +138,11 @@ export const MainMenuView = ({
                 </div>
 
                 <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-2 group-hover:text-slate-200 transition-colors">
-                  Pake Template Siap Pakai
+                  Use Curated Templates
                 </h3>
 
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Pilih dari arsitektur tata letak siap pakai: SaaS Landing Page, Analytics Dashboard, Bento Grid Portfolio, Editorial Magazine, atau Mobile Wireframe.
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
+                  Choose from production-ready layout architectures: SaaS Landing Page, Analytics Dashboard, Bento Grid Portfolio, Editorial Magazine, or Mobile Wireframe.
                 </p>
               </div>
 
@@ -161,10 +161,10 @@ export const MainMenuView = ({
               COLLECTION // STARTERS
             </span>
             <h2 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
-              TEMPLATE LAYOUT SIAP PAKAI
+              PRODUCTION-READY LAYOUT TEMPLATES
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 font-mono-tech tracking-wider uppercase">
-              SEMUA KOTAK DAPAT DIGESER, DIUBAH UKURANNYA, DAN DI-DOWNLOAD
+              ALL BOXES CAN BE DRAGGED, RESIZED, AND EXPORTED INSTANTLY
             </p>
           </div>
 

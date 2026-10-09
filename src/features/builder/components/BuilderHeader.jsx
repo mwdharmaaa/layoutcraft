@@ -41,7 +41,7 @@ export const BuilderHeader = ({
           <button
             onClick={onBackToMenu}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-white hover:text-black text-[11px] font-mono-tech tracking-[0.15em] text-slate-200 transition-all cursor-pointer shadow-sm"
-            title="Kembali ke Menu Utama"
+            title="Return to Main Menu"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">MENU</span>

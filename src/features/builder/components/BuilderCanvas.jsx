@@ -119,10 +119,10 @@ export const BuilderCanvas = ({
                 EMPTY BOARD // 1280PX
               </span>
               <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight mb-2">
-                Kanvas Siap Digunakan
+                Canvas is Ready
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed mb-6 font-sans">
-                Klik tombol di bawah atau klik dua kali di mana saja pada kanvas untuk mulai menambahkan kotak tata letak.
+                Click the button below or double-click anywhere on the canvas to start placing layout blocks.
               </p>
               {onAddBox && (
                 <button

@@ -16,7 +16,7 @@ export const BoxPropertyBar = ({
         <Sliders className="w-6 h-6 mb-3 text-slate-500" />
         <p className="font-mono-tech font-bold uppercase tracking-[0.2em] text-slate-300">NO BOX SELECTED</p>
         <p className="text-[11px] text-slate-500 mt-1 font-sans">
-          Klik pada kotak mana pun di kanvas untuk mengedit dimensi, warna, dan lapisan.
+          Click on any box on the canvas to configure dimensions, color scheme, and layers.
         </p>
       </aside>
     );
