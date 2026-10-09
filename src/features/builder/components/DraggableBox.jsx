@@ -43,10 +43,14 @@ export const DraggableBox = ({
       id={`builder-box-${box.id}`}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(box.id);
+        if (box?.id) {
+          onSelect(box.id);
+        }
       }}
       onPointerDown={(e) => {
-        onSelect(box.id);
+        if (box?.id) {
+          onSelect(box.id);
+        }
         handlePointerDown(e);
       }}
       style={{

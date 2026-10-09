@@ -141,7 +141,7 @@ export const BuilderCanvas = ({
             <DraggableBox
               key={box.id}
               box={box}
-              isSelected={selectedBoxId === box.id}
+              isSelected={Boolean(selectedBoxId && box.id && selectedBoxId === box.id)}
               zoom={zoom}
               gridSize={gridSize}
               snapToGrid={snapToGrid}
