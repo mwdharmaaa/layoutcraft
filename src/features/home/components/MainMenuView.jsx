@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Plus } from 'lucide-react';
+import { ArrowDown, ArrowRight, Plus } from 'lucide-react';
 import { AmbientGlow } from './AmbientGlow';
 import { HomeTemplateGrid } from './HomeTemplateGrid';
 
@@ -41,7 +41,7 @@ export const MainMenuView = ({
 
       {/* Hero Section (in project0002 moniker style) */}
       <main className="relative z-10 flex-1 flex flex-col items-center px-6 sm:px-12 pb-24">
-        <section className="min-h-[72vh] w-full flex flex-col items-center justify-center text-center max-w-5xl mx-auto pt-4 pb-8">
+        <section className="min-h-[calc(100vh-140px)] w-full flex flex-col items-center justify-center text-center max-w-5xl mx-auto py-12">
           {/* Intro Tagline */}
           <p className="text-xs sm:text-sm font-semibold tracking-[0.35em] text-slate-400 uppercase mb-3 sm:mb-4">
             VISUAL FRONTEND ENGINE
@@ -89,65 +89,8 @@ export const MainMenuView = ({
           </div>
         </section>
 
-        {/* Mode Selector Triptych (Dual Showcase Cards) */}
-        <section className="w-full max-w-5xl mx-auto py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Card 01: Blank Canvas */}
-            <div
-              onClick={onStartBlank}
-              className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <h3 className="font-display font-bold text-xl sm:text-2xl text-white group-hover:text-slate-200 transition-colors">
-                    Create Custom Layout
-                  </h3>
-                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all shrink-0 mt-0.5">
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
-                  Start with an unconstrained blank canvas. Place freeform boxes, adjust dimensions with interactive handles, snap to precision grid, and export standalone HTML.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono-tech text-slate-400">
-                <span>EMPTY 1280PX BOARD</span>
-                <span className="text-white group-hover:underline">OPEN CANVAS</span>
-              </div>
-            </div>
-
-            {/* Card 02: Starter Templates */}
-            <div
-              onClick={scrollToTemplates}
-              className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <h3 className="font-display font-bold text-xl sm:text-2xl text-white group-hover:text-slate-200 transition-colors">
-                    Use Curated Templates
-                  </h3>
-                  <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all shrink-0 mt-0.5">
-                    <ArrowDown className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
-                  Choose from production-ready layout architectures: SaaS Landing Page, Analytics Dashboard, Bento Grid Portfolio, Editorial Magazine, or Mobile Wireframe.
-                </p>
-              </div>
-
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono-tech text-slate-400">
-                <span>5 CURATED STARTERS</span>
-                <span className="text-white group-hover:underline">VIEW GALLERY</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Templates Gallery Section (project0002 portfolio style) */}
-        <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-10 pb-8 space-y-6">
+        <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-16 pb-12 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h2 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
               PRODUCTION-READY LAYOUT TEMPLATES
