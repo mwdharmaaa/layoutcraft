@@ -7,6 +7,7 @@ import { BuilderTemplatesModal } from './BuilderTemplatesModal';
 import { downloadHtmlLayout } from '../utils/html_exporter';
 import { useToast } from '@/features/toast/hooks/useToast';
 import { ToastNotification } from '@/features/toast/components/ToastNotification';
+import { AmbientGlow } from '@/features/home/components/AmbientGlow';
 
 export const LayoutBuilderView = ({ onBackToMenu, initialTemplate, initialBoxes }) => {
   const { toasts, showToast } = useToast();
@@ -47,7 +48,10 @@ export const LayoutBuilderView = ({ onBackToMenu, initialTemplate, initialBoxes 
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen overflow-hidden bg-zinc-950 text-zinc-100 font-sans">
+    <div className="relative flex flex-col w-screen h-screen overflow-hidden bg-canvas-texture text-slate-100 font-sans select-none">
+      {/* Background Lighting from landing page */}
+      <AmbientGlow />
+
       {/* Top Header */}
       <BuilderHeader
         onBackToMenu={onBackToMenu}
