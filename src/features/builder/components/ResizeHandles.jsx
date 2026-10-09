@@ -100,35 +100,35 @@ export const ResizeHandles = ({
             <div
               className={`absolute ${edge.railClass} rounded-full transition-all duration-150 pointer-events-none ${
                 isActive
-                  ? 'bg-blue-400 shadow-sm shadow-blue-400/80'
-                  : 'bg-blue-500/70 group-hover/edge-n:bg-blue-400 group-hover/edge-s:bg-blue-400 group-hover/edge-w:bg-blue-400 group-hover/edge-e:bg-blue-400'
+                  ? 'bg-white shadow-sm shadow-white/80'
+                  : 'bg-white/40 group-hover/edge-n:bg-white/80 group-hover/edge-s:bg-white/80 group-hover/edge-w:bg-white/80 group-hover/edge-e:bg-white/80'
               }`}
             />
 
             {/* Tactile Grab Pill */}
             <div
-              className={`relative z-10 ${edge.pillClass} rounded-full bg-blue-600 border border-blue-300/90 shadow-md flex items-center justify-center gap-0.5 transition-all duration-150 pointer-events-none ${
+              className={`relative z-10 ${edge.pillClass} rounded-full bg-[#1e2124] border border-white/40 shadow-md flex items-center justify-center gap-0.5 transition-all duration-150 pointer-events-none ${
                 isActive
-                  ? 'scale-125 bg-blue-500 ring-2 ring-white/50'
-                  : 'group-hover/edge-n:scale-115 group-hover/edge-s:scale-115 group-hover/edge-w:scale-115 group-hover/edge-e:scale-115 group-hover/edge-n:bg-blue-500 group-hover/edge-s:bg-blue-500 group-hover/edge-w:bg-blue-500 group-hover/edge-e:bg-blue-500'
+                  ? 'scale-125 bg-white border-white'
+                  : 'group-hover/edge-n:scale-110 group-hover/edge-s:scale-110 group-hover/edge-w:scale-110 group-hover/edge-e:scale-110 group-hover/edge-n:border-white group-hover/edge-s:border-white group-hover/edge-w:border-white group-hover/edge-e:border-white'
               }`}
             >
               {edge.isHoriz ? (
                 <>
-                  <span className="w-1.5 h-0.5 bg-white/90 rounded-full" />
-                  <span className="w-1.5 h-0.5 bg-white/90 rounded-full" />
+                  <span className={`w-1.5 h-0.5 rounded-full ${isActive ? 'bg-black' : 'bg-white/90'}`} />
+                  <span className={`w-1.5 h-0.5 rounded-full ${isActive ? 'bg-black' : 'bg-white/90'}`} />
                 </>
               ) : (
                 <>
-                  <span className="h-1.5 w-0.5 bg-white/90 rounded-full" />
-                  <span className="h-1.5 w-0.5 bg-white/90 rounded-full" />
+                  <span className={`h-1.5 w-0.5 rounded-full ${isActive ? 'bg-black' : 'bg-white/90'}`} />
+                  <span className={`h-1.5 w-0.5 rounded-full ${isActive ? 'bg-black' : 'bg-white/90'}`} />
                 </>
               )}
             </div>
 
             {/* Hover Side Tag */}
             <span
-              className={`absolute ${edge.tooltipPos} pointer-events-none text-[9px] font-mono font-medium tracking-tight px-1.5 py-0.5 rounded bg-zinc-900/95 border border-zinc-700 text-blue-300 shadow-md opacity-0 transition-opacity duration-150 whitespace-nowrap ${
+              className={`absolute ${edge.tooltipPos} pointer-events-none text-[9px] font-mono-tech uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#141517]/95 border border-white/20 text-slate-200 shadow-md opacity-0 transition-opacity duration-150 whitespace-nowrap ${
                 isActive ? 'opacity-100' : 'group-hover/edge-n:opacity-100 group-hover/edge-s:opacity-100 group-hover/edge-w:opacity-100 group-hover/edge-e:opacity-100'
               }`}
             >
@@ -151,9 +151,9 @@ export const ResizeHandles = ({
             className={`absolute ${corner.pos} ${corner.cursor} w-5 h-5 z-40 flex items-center justify-center group/corner`}
           >
             <div
-              className={`w-2.5 h-2.5 bg-white border-2 border-blue-600 rounded-xs shadow-md transition-all duration-150 pointer-events-none ${
+              className={`w-2.5 h-2.5 bg-white border border-black/80 rounded-xs shadow-md transition-all duration-150 pointer-events-none ${
                 isActive
-                  ? 'scale-130 bg-blue-100 ring-2 ring-blue-400'
+                  ? 'scale-130 ring-2 ring-white/80'
                   : 'group-hover/corner:scale-125'
               }`}
             />

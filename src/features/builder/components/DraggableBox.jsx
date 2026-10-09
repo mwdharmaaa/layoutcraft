@@ -54,25 +54,25 @@ export const DraggableBox = ({
         width: `${box.width}px`,
         height: `${box.height}px`,
         backgroundColor: box.color,
-        borderColor: isSelected ? '#3b82f6' : box.borderColor,
+        borderColor: isSelected ? 'rgba(255, 255, 255, 0.85)' : box.borderColor,
         borderRadius: `${box.borderRadius || 8}px`,
         zIndex: isSelected ? 40 : (box.zIndex || 1),
       }}
       className={`absolute select-none cursor-move border transition-shadow flex flex-col justify-between p-3 ${
         isSelected
           ? isResizing
-            ? 'ring-2 ring-blue-400 shadow-2xl shadow-blue-500/20'
-            : 'ring-2 ring-blue-500 shadow-xl shadow-blue-500/10'
-          : 'hover:border-zinc-500 shadow-sm'
+            ? 'ring-2 ring-white/70 shadow-2xl shadow-black/80'
+            : 'ring-1 ring-white/50 shadow-xl shadow-black/60'
+          : 'hover:border-white/30 shadow-sm'
       } ${isInteracting ? 'opacity-95' : ''}`}
     >
       {/* Top Header Label & Controls */}
       <div className="flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-1.5 min-w-0 pointer-events-auto cursor-grab active:cursor-grabbing px-1 py-0.5 rounded hover:bg-zinc-800/40 transition-colors">
-          <Move className="w-3 h-3 text-zinc-400 shrink-0" />
+        <div className="flex items-center gap-1.5 min-w-0 pointer-events-auto cursor-grab active:cursor-grabbing px-1.5 py-0.5 rounded hover:bg-white/10 transition-colors">
+          <Move className="w-3 h-3 text-slate-400 shrink-0" />
           <span
             style={{ color: box.textColor }}
-            className="text-xs font-semibold truncate tracking-tight"
+            className="text-xs font-mono-tech font-semibold truncate tracking-wider"
           >
             {box.name}
           </span>
@@ -80,13 +80,13 @@ export const DraggableBox = ({
 
         {/* Action Buttons on Box when Selected */}
         {isSelected && (
-          <div className="flex items-center gap-1 pointer-events-auto bg-zinc-900/90 backdrop-blur-xs px-1.5 py-0.5 rounded border border-zinc-700">
+          <div className="flex items-center gap-1 pointer-events-auto bg-[#181a1d]/95 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-lg">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onAddBelow?.(box);
               }}
-              className="p-1 hover:text-emerald-400 text-zinc-400 transition-colors cursor-pointer"
+              className="p-1 hover:text-white text-slate-400 transition-colors cursor-pointer"
               title="Add Box Below"
             >
               <Plus className="w-3 h-3" />
@@ -96,7 +96,7 @@ export const DraggableBox = ({
                 e.stopPropagation();
                 onDuplicate(box.id);
               }}
-              className="p-1 hover:text-blue-400 text-zinc-400 transition-colors cursor-pointer"
+              className="p-1 hover:text-white text-slate-400 transition-colors cursor-pointer"
               title="Duplicate (Ctrl+D)"
             >
               <Copy className="w-3 h-3" />
@@ -106,7 +106,7 @@ export const DraggableBox = ({
                 e.stopPropagation();
                 onDelete(box.id);
               }}
-              className="p-1 hover:text-red-400 text-zinc-400 transition-colors cursor-pointer"
+              className="p-1 hover:text-red-400 text-slate-400 transition-colors cursor-pointer"
               title="Delete Box"
             >
               <Trash2 className="w-3 h-3" />
@@ -118,15 +118,15 @@ export const DraggableBox = ({
       {/* Center Dimension Info Badge when selected or dragging/resizing */}
       {isSelected && (
         <div className="absolute -bottom-6 left-0 flex items-center gap-2 pointer-events-none select-none whitespace-nowrap">
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-600 text-white font-medium shadow-xs">
-            {box.width} x {box.height} px
+          <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded-full bg-white text-black font-bold shadow-xs">
+            {box.width} × {box.height} PX
             {isResizing && resizingDirection ? ` (${resizingDirection.toUpperCase()})` : ''}
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+          <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded-full bg-[#141517] text-slate-300 border border-white/10">
             X: {box.x} Y: {box.y}
           </span>
-          <span className="text-[9px] font-mono text-zinc-400 bg-zinc-900/90 px-1.5 py-0.5 rounded border border-zinc-800 hidden sm:inline-block">
-            Click side edges to resize
+          <span className="text-[9px] font-mono-tech text-slate-400 bg-[#141517] px-2 py-0.5 rounded-full border border-white/10 hidden sm:inline-block">
+            DRAG EDGES TO RESIZE
           </span>
         </div>
       )}
