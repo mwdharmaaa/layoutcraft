@@ -12,7 +12,15 @@ export default function App() {
   };
 
   const handleSelectTemplate = (template) => {
-    setActiveTemplate(template);
+    if (!template) return;
+    const preparedTemplate = {
+      ...template,
+      boxes: (template.boxes || []).map((b, idx) => ({
+        ...b,
+        id: b.id || `${template.id}-box-${idx + 1}-${Date.now()}`,
+      })),
+    };
+    setActiveTemplate(preparedTemplate);
     setCurrentView('builder');
   };
 
