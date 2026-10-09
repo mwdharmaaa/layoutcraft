@@ -68,21 +68,26 @@ export const MainMenuView = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-12 sm:mt-16 flex items-center justify-center gap-4 flex-wrap">
-            <button
-              onClick={onStartBlank}
-              className="flex items-center gap-2.5 px-7 py-3 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-[#282c31] hover:border-white text-xs font-mono-tech tracking-[0.2em] text-slate-200 hover:text-white transition-all transform hover:translate-y-0.5 group cursor-pointer shadow-xl shadow-black/40"
-            >
-              <span>CREATE FROM SCRATCH</span>
-              <ArrowRight className="w-3.5 h-3.5 text-white group-hover:translate-x-1 transition-transform" />
-            </button>
+          <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-4 w-full">
+            {/* Primary Spotlight Create Button */}
+            <div className="relative group">
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-white/20 via-white/40 to-white/20 opacity-70 blur-md group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <button
+                onClick={onStartBlank}
+                className="relative flex items-center justify-center gap-3 px-10 py-4 sm:px-12 sm:py-4.5 rounded-full bg-white hover:bg-slate-100 text-black text-xs sm:text-sm font-mono-tech font-bold tracking-[0.25em] transition-all transform hover:scale-[1.02] active:scale-[0.99] cursor-pointer shadow-2xl shadow-black/80 border border-white"
+              >
+                <span>CREATE FROM SCRATCH</span>
+                <ArrowRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
 
+            {/* Secondary Templates Button Placed Underneath */}
             <button
               onClick={scrollToTemplates}
-              className="flex items-center gap-2.5 px-7 py-3 rounded-full border border-white/10 bg-transparent hover:bg-white/5 text-xs font-mono-tech tracking-[0.2em] text-slate-400 hover:text-white transition-all transform hover:translate-y-0.5 group cursor-pointer"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/10 hover:border-white/25 bg-[#141517]/60 hover:bg-white/10 text-xs font-mono-tech tracking-[0.2em] text-slate-400 hover:text-white transition-all transform hover:translate-y-0.5 group cursor-pointer"
             >
               <span>EXPLORE TEMPLATES</span>
-              <ArrowDown className="w-3.5 h-3.5 text-white group-hover:translate-y-0.5 transition-transform" />
+              <ArrowDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white group-hover:translate-y-0.5 transition-all" />
             </button>
           </div>
         </section>
