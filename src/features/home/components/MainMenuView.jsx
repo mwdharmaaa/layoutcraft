@@ -27,11 +27,8 @@ export const MainMenuView = ({
           </span>
         </div>
 
-        {/* Right Navigation / Spec info */}
-        <div className="flex items-center gap-6">
-          <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.25em] text-slate-400 uppercase hidden md:inline">
-            VISUAL ARCHITECTURE // V2.5
-          </span>
+        {/* Right Navigation */}
+        <div className="flex items-center gap-4">
           <button
             onClick={onStartBlank}
             className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-white hover:text-black text-[11px] font-mono-tech tracking-[0.15em] text-slate-200 transition-all cursor-pointer"
