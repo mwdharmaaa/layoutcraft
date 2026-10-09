@@ -98,10 +98,7 @@ export const MainMenuView = ({
               className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
-                    MODE .01 / SCRATCHPAD
-                  </span>
+                <div className="flex items-center justify-end mb-4">
                   <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
@@ -128,10 +125,7 @@ export const MainMenuView = ({
               className="group relative overflow-hidden bg-[#1c1f23] border border-white/10 hover:border-white/30 rounded-xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 cursor-pointer shadow-2xl hover:-translate-y-1"
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-mono-tech tracking-[0.25em] text-slate-400 uppercase">
-                    MODE .02 / TEMPLATES
-                  </span>
+                <div className="flex items-center justify-end mb-4">
                   <div className="p-1.5 rounded-full border border-white/20 group-hover:border-white bg-white/5 group-hover:bg-white text-slate-300 group-hover:text-black transition-all">
                     <ArrowDown className="w-3.5 h-3.5" />
                   </div>
@@ -157,9 +151,6 @@ export const MainMenuView = ({
         {/* Templates Gallery Section (project0002 portfolio style) */}
         <section ref={templatesRef} className="w-full max-w-5xl mx-auto pt-16 pb-8 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.3em] text-slate-400 uppercase block">
-              COLLECTION // STARTERS
-            </span>
             <h2 className="font-display text-2xl sm:text-4xl font-black tracking-tight text-white uppercase">
               PRODUCTION-READY LAYOUT TEMPLATES
             </h2>
