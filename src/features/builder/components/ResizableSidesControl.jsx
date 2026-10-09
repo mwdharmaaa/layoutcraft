@@ -35,12 +35,12 @@ export const ResizableSidesControl = ({ selectedBox, onUpdateBox }) => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-          Resizable Edges
+      <div className="flex items-center justify-between border-b border-white/10 pb-1">
+        <label className="text-[10px] font-mono-tech font-bold text-slate-400 uppercase tracking-[0.25em]">
+          RESIZABLE EDGES
         </label>
-        <span className="text-[10px] text-zinc-500 font-mono">
-          {Object.values(currentSides).filter(Boolean).length}/4 active
+        <span className="text-[10px] text-slate-500 font-mono-tech uppercase">
+          {Object.values(currentSides).filter(Boolean).length}/4 ACTIVE
         </span>
       </div>
 
@@ -53,54 +53,54 @@ export const ResizableSidesControl = ({ selectedBox, onUpdateBox }) => {
               key={key}
               type="button"
               onClick={() => handleToggleSide(key)}
-              className={`flex items-center justify-between px-2.5 py-1.5 rounded text-[11px] font-medium border transition-colors cursor-pointer ${
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-[10px] font-mono-tech uppercase tracking-wider border transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-blue-600/20 border-blue-500/50 text-blue-300'
-                  : 'bg-zinc-950 border-zinc-800 text-zinc-500 hover:text-zinc-400'
+                  ? 'bg-white/15 border-white/40 text-white shadow-xs font-semibold'
+                  : 'bg-[#141517] border-white/10 text-slate-400 hover:text-slate-200'
               }`}
             >
               <span className="flex items-center gap-1.5">
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${
-                    isActive ? 'bg-blue-400' : 'bg-zinc-700'
+                    isActive ? 'bg-white' : 'bg-slate-600'
                   }`}
                 />
                 {label}
               </span>
-              <span className="text-[9px] font-mono text-zinc-500">{axis}</span>
+              <span className="text-[9px] font-mono-tech text-slate-500">{axis}</span>
             </button>
           );
         })}
       </div>
 
       {/* Fast Presets */}
-      <div className="flex items-center gap-1 pt-1">
+      <div className="flex items-center gap-1.5 pt-1">
         <button
           type="button"
           onClick={() => handleSetPreset('all')}
-          className="flex-1 flex items-center justify-center gap-1 py-1 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-[10px] text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1 py-1 rounded-full bg-[#141517] hover:bg-white/10 border border-white/10 text-[10px] font-mono-tech tracking-wider text-slate-400 hover:text-white transition-all cursor-pointer"
           title="Enable all 4 sides"
         >
-          <CheckSquare className="w-2.5 h-2.5 text-blue-400" />
-          <span>All 4</span>
+          <CheckSquare className="w-2.5 h-2.5 text-slate-300" />
+          <span>ALL 4</span>
         </button>
         <button
           type="button"
           onClick={() => handleSetPreset('width')}
-          className="flex-1 flex items-center justify-center gap-1 py-1 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-[10px] text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1 py-1 rounded-full bg-[#141517] hover:bg-white/10 border border-white/10 text-[10px] font-mono-tech tracking-wider text-slate-400 hover:text-white transition-all cursor-pointer"
           title="Width only (Left & Right)"
         >
-          <ArrowLeftRight className="w-2.5 h-2.5 text-zinc-400" />
-          <span>Width</span>
+          <ArrowLeftRight className="w-2.5 h-2.5 text-slate-300" />
+          <span>WIDTH</span>
         </button>
         <button
           type="button"
           onClick={() => handleSetPreset('height')}
-          className="flex-1 flex items-center justify-center gap-1 py-1 rounded bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-[10px] text-zinc-400 hover:text-zinc-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1 py-1 rounded-full bg-[#141517] hover:bg-white/10 border border-white/10 text-[10px] font-mono-tech tracking-wider text-slate-400 hover:text-white transition-all cursor-pointer"
           title="Height only (Top & Bottom)"
         >
-          <ArrowUpDown className="w-2.5 h-2.5 text-zinc-400" />
-          <span>Height</span>
+          <ArrowUpDown className="w-2.5 h-2.5 text-slate-300" />
+          <span>HEIGHT</span>
         </button>
       </div>
     </div>
