@@ -54,7 +54,7 @@ export const BuilderCanvas = ({
           onSelectBox(null);
         }
       }}
-      className="flex-1 min-w-0 h-full relative overflow-auto p-8 sm:p-12 flex bg-zinc-950 select-none scroll-smooth"
+      className="flex-1 min-w-0 h-full relative overflow-auto p-8 sm:p-12 flex bg-transparent select-none scroll-smooth z-10"
     >
       {/* Sizer Wrapper for Accurate Scaled Scroll Bounds */}
       <div
@@ -91,7 +91,7 @@ export const BuilderCanvas = ({
               onAddBox(undefined, { x: Math.max(0, clickX - 100), y: Math.max(0, clickY - 40) });
             }
           }}
-          className="relative bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden transition-transform duration-75"
+          className="relative bg-[#181a1d]/95 border border-white/10 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden transition-transform duration-75 backdrop-blur-xs"
         >
           {/* Canvas Top Bar Indicator */}
           <div
@@ -99,33 +99,38 @@ export const BuilderCanvas = ({
               transform: `scale(${1 / scale})`,
               transformOrigin: 'top left',
             }}
-            className="absolute top-3 left-4 flex items-center gap-2 pointer-events-none z-10"
+            className="absolute top-4 left-5 flex items-center gap-2 pointer-events-none z-10"
           >
-            <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
-              Grid: {gridSize}px {snapToGrid ? '(Snap On)' : '(Snap Off)'}
+            <span className="text-[10px] font-mono-tech tracking-[0.15em] uppercase text-slate-400 bg-[#141517]/90 px-3 py-1 rounded-full border border-white/10 shadow-sm">
+              GRID: {gridSize}PX {snapToGrid ? '(SNAP ON)' : '(SNAP OFF)'}
             </span>
-            <span className="text-[11px] font-mono text-zinc-500 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800">
-              {boxes.length} {boxes.length === 1 ? 'Box' : 'Boxes'}
+            <span className="text-[10px] font-mono-tech tracking-[0.15em] uppercase text-slate-400 bg-[#141517]/90 px-3 py-1 rounded-full border border-white/10 shadow-sm">
+              {boxes.length} {boxes.length === 1 ? 'BOX' : 'BOXES'}
             </span>
-            <span className="text-[11px] font-mono text-blue-400/80 bg-zinc-900/80 px-2 py-0.5 rounded border border-zinc-800 hidden sm:inline-block">
-              Canvas: 1280 × {canvasHeight}px
+            <span className="text-[10px] font-mono-tech tracking-[0.15em] uppercase text-slate-400 bg-[#141517]/90 px-3 py-1 rounded-full border border-white/10 shadow-sm hidden sm:inline-block">
+              CANVAS: 1280 × {canvasHeight}PX
             </span>
           </div>
 
           {/* Empty Canvas Placeholder */}
           {boxes.length === 0 && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 select-none">
-              <p className="text-zinc-400 text-sm font-medium">Canvas is ready</p>
-              <p className="text-zinc-600 text-xs mt-1 mb-4">
-                Click button below or double-click anywhere to place your first box
+              <span className="text-[10px] font-mono-tech tracking-[0.3em] text-slate-400 uppercase block mb-2">
+                EMPTY BOARD // 1280PX
+              </span>
+              <h3 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight mb-2">
+                Kanvas Siap Digunakan
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed mb-6 font-sans">
+                Klik tombol di bawah atau klik dua kali di mana saja pada kanvas untuk mulai menambahkan kotak tata letak.
               </p>
               {onAddBox && (
                 <button
                   type="button"
                   onClick={() => onAddBox()}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/20 bg-[#1e2124]/80 hover:bg-white hover:text-black text-xs font-mono-tech tracking-[0.2em] text-slate-200 transition-all transform hover:translate-y-0.5 cursor-pointer shadow-xl shadow-black/40"
                 >
-                  + Add First Box
+                  <span>+ ADD FIRST BOX</span>
                 </button>
               )}
             </div>
@@ -160,10 +165,10 @@ export const BuilderCanvas = ({
               transform: `scale(${1 / scale})`,
               transformOrigin: 'bottom center',
             }}
-            className="absolute bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none opacity-40"
+            className="absolute bottom-6 left-0 right-0 flex items-center justify-center pointer-events-none opacity-60"
           >
-            <span className="text-[10px] font-mono text-zinc-500 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
-              Canvas Depth: {canvasHeight}px : Scrollable Workspace
+            <span className="text-[10px] font-mono-tech tracking-[0.2em] uppercase text-slate-400 bg-[#141517]/90 px-4 py-1.5 rounded-full border border-white/10 shadow-sm">
+              CANVAS DEPTH: {canvasHeight}PX // SCROLLABLE WORKSPACE
             </span>
           </div>
         </div>
