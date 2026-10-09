@@ -7,10 +7,22 @@ import {
 } from '../constants/builder_defaults';
 import { snapToGridValue } from '../utils/snap_helpers';
 
+const normalizeBoxes = (rawBoxes, prefix = 'box') => {
+  const source = rawBoxes !== undefined ? rawBoxes : INITIAL_BUILDER_BOXES;
+  if (!Array.isArray(source)) return [];
+  return source.map((box, idx) => ({
+    ...box,
+    id: box.id || `${prefix}-${Date.now()}-${idx + 1}-${Math.random().toString(36).slice(2, 6)}`,
+    resizableSides: box.resizableSides ? { ...box.resizableSides } : { ...DEFAULT_RESIZABLE_SIDES },
+  }));
+};
+
 export function useLayoutBuilder(initialBoxes) {
-  const startBoxes = initialBoxes !== undefined ? initialBoxes : INITIAL_BUILDER_BOXES;
-  const [boxes, setBoxes] = useState(startBoxes);
-  const [selectedBoxId, setSelectedBoxId] = useState(startBoxes[0]?.id || null);
+  const [boxes, setBoxes] = useState(() => normalizeBoxes(initialBoxes));
+  const [selectedBoxId, setSelectedBoxId] = useState(() => {
+    const list = normalizeBoxes(initialBoxes);
+    return list[0]?.id || null;
+  });
   const [gridSize, setGridSize] = useState(DEFAULT_GRID_SIZE);
   const [showGrid, setShowGrid] = useState(true);
   const [snapToGrid, setSnapToGrid] = useState(true);
@@ -19,7 +31,7 @@ export function useLayoutBuilder(initialBoxes) {
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
 
   // History stack
-  const [history, setHistory] = useState([startBoxes]);
+  const [history, setHistory] = useState(() => [normalizeBoxes(initialBoxes)]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const commitToHistory = useCallback((newBoxes) => {
@@ -94,6 +106,7 @@ export function useLayoutBuilder(initialBoxes) {
   }, [boxes, selectedBoxId, snapToGrid, gridSize, commitToHistory]);
 
   const handleUpdateBox = useCallback((id, patch, recordHistory = true) => {
+    if (!id) return;
     setBoxes((prev) => {
       const updated = prev.map((b) => (b.id === id ? { ...b, ...patch } : b));
       if (recordHistory) {
@@ -108,13 +121,17 @@ export function useLayoutBuilder(initialBoxes) {
   }, [boxes, commitToHistory]);
 
   const handleDeleteBox = useCallback((id) => {
-    const nextBoxes = boxes.filter((b) => b.id !== id);
-    setBoxes(nextBoxes);
-    setSelectedBoxId(nextBoxes[0]?.id || null);
-    commitToHistory(nextBoxes);
-  }, [boxes, commitToHistory]);
+    if (!id) return;
+    setBoxes((prev) => {
+      const nextBoxes = prev.filter((b) => b.id !== id);
+      setSelectedBoxId((curr) => (curr === id ? nextBoxes[0]?.id || null : curr));
+      commitToHistory(nextBoxes);
+      return nextBoxes;
+    });
+  }, [commitToHistory]);
 
   const handleDuplicateBox = useCallback((id) => {
+    if (!id) return;
     const target = boxes.find((b) => b.id === id);
     if (!target) return;
     const newId = `box-${Date.now()}`;
@@ -141,11 +158,7 @@ export function useLayoutBuilder(initialBoxes) {
 
   const handleLoadTemplate = useCallback((template) => {
     if (!template?.boxes) return;
-    const cloned = template.boxes.map((b, idx) => ({
-      ...b,
-      id: `box-tpl-${Date.now()}-${idx}`,
-      resizableSides: b.resizableSides ? { ...b.resizableSides } : { ...DEFAULT_RESIZABLE_SIDES },
-    }));
+    const cloned = normalizeBoxes(template.boxes, template.id || 'tpl');
     setBoxes(cloned);
     setSelectedBoxId(cloned[0]?.id || null);
     commitToHistory(cloned);
