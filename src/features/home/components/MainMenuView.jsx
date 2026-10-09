@@ -55,9 +55,9 @@ export const MainMenuView = ({
             LAYOUT
           </h1>
 
-          {/* Right-aligned Subtitle Block (project0002 trademark) */}
-          <div className="w-full flex justify-end max-w-2xl sm:max-w-4xl mt-3 sm:mt-5">
-            <div className="text-right">
+          {/* Centered Subtitle Block */}
+          <div className="w-full flex justify-center text-center mt-3 sm:mt-5">
+            <div className="text-center flex flex-col items-center gap-0.5">
               <span className="block text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.3em] text-slate-300 uppercase">
                 A SPECIAL
               </span>
