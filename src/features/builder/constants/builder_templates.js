@@ -1,6 +1,6 @@
 import { DEFAULT_RESIZABLE_SIDES } from './builder_defaults';
 
-export const BUILDER_TEMPLATES = [
+const RAW_TEMPLATES = [
   {
     id: 'saas-landing',
     name: 'SaaS Landing Page',
@@ -510,3 +510,11 @@ export const BUILDER_TEMPLATES = [
     ],
   },
 ];
+
+export const BUILDER_TEMPLATES = RAW_TEMPLATES.map((template) => ({
+  ...template,
+  boxes: template.boxes.map((box, idx) => ({
+    ...box,
+    id: box.id || `${template.id}-box-${idx + 1}`,
+  })),
+}));
